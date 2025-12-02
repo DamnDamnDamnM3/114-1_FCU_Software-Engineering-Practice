@@ -4,8 +4,8 @@ RecommendationService 類別
 """
 
 from typing import List
-from src.models.user import User
-from src.models.menu_item import MenuItem
+from models.user import User
+from models.menu_item import MenuItem
 
 
 class RecommendationService:

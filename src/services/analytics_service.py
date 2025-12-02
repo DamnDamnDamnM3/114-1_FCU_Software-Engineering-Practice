@@ -3,7 +3,7 @@ AnalyticsService 類別
 負責飲食記錄分析
 """
 
-from src.models.user import User
+from models.user import User
 
 
 class AnalyticsService:

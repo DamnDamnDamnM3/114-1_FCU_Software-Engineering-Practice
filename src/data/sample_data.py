@@ -4,14 +4,14 @@ SampleData 類別
 """
 
 from typing import List
-from src.models.restaurant import Restaurant
-from src.models.menu_item import MenuItem
-from src.models.nutrition_info import NutritionInfo
-from src.models.review import Review
-from src.models.user import User
-from src.models.user_profile import UserProfile
-from src.models.app_mode import AppMode
-from src.models.health_profile import HealthProfile
+from models.restaurant import Restaurant
+from models.menu_item import MenuItem
+from models.nutrition_info import NutritionInfo
+from models.review import Review
+from models.user import User
+from models.user_profile import UserProfile
+from models.app_mode import AppMode
+from models.health_profile import HealthProfile
 from datetime import datetime
 
 

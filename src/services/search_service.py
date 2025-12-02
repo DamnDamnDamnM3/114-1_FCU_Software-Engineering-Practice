@@ -4,8 +4,8 @@ SearchService 類別
 """
 
 from typing import List
-from src.models.restaurant import Restaurant
-from src.models.filter_criteria import FilterCriteria
+from models.restaurant import Restaurant
+from models.filter_criteria import FilterCriteria
 
 
 class SearchService:

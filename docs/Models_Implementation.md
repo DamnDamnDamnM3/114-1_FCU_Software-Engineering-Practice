@@ -159,3 +159,4 @@ analysis = analytics_service.generate_analysis(user)
 3. **可擴充性**: 方法簽名完整，可隨時加入具體實作
 4. **循環引用**: 已使用 TYPE_CHECKING 和字串註解解決循環引用問題
 
+
