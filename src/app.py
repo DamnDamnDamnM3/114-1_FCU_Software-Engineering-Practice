@@ -6,6 +6,12 @@ Flask 主應用程式
 from flask import Flask
 import os
 import importlib
+from dotenv import load_dotenv
+from utils.debug import DEBUG_PRINT, WARN_PRINT, ERROR_PRINT, INFO_PRINT
+
+# 載入 ENV/.env 檔案
+env_path = os.path.join(os.path.dirname(__file__), "..", "ENV", ".env")
+load_dotenv(env_path)
 
 
 def create_app():
@@ -54,11 +60,11 @@ def register_blueprints(app):
                 if hasattr(module, blueprint_name):
                     blueprint = getattr(module, blueprint_name)
                     app.register_blueprint(blueprint)
-                    print(f"✓ 已載入模組: {module_name}")
+                    INFO_PRINT(f"[OK] 已載入模組: {module_name}")
                 else:
-                    print(f"⚠ 模組 {module_name} 未找到 Blueprint ({blueprint_name})")
+                    WARN_PRINT(f"[WARN] 模組 {module_name} 未找到 Blueprint ({blueprint_name})")
             except Exception as e:
-                print(f"✗ 載入模組 {module_name} 時發生錯誤: {str(e)}")
+                ERROR_PRINT(f"[ERROR] 載入模組 {module_name} 時發生錯誤: {str(e)}")
 
 
 # 創建應用程式實例
