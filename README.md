@@ -9,6 +9,8 @@ Flask 模組化網頁應用程式專案
 ├── ENV/                  # 環境變數資料夾
 │   ├── .env             # 環境變數檔案（不提交到版本控制）
 │   └── .env.example    # 環境變數範例檔案
+├── docs/                # 文件資料夾
+│   └── Database_Schema.md # 資料庫結構文件
 ├── src/
 │   ├── app.py           # 主應用程式（自動載入所有模組）
 │   ├── modules/         # 模組資料夾（每個開發者的模組放在這裡）
@@ -21,6 +23,9 @@ Flask 模組化網頁應用程式專案
 │   │   └── user/
 │   ├── utils/          # 工具模組
 │   │   └── debug.py    # 條件輸出工具（類似 #ifdef）
+│   ├── scripts/        # 腳本資料夾
+│   │   ├── init_db.py  # 資料庫初始化腳本
+│   │   └── init_db.sql # 資料庫初始化 SQL
 │   └── requirements.txt # Python 依賴套件
 ├── deploy.sh            # 部署腳本
 └── run.sh               # 運行腳本
@@ -132,6 +137,37 @@ nano ENV/.env
 3. 應用程式會自動載入 `ENV/.env` 檔案中的設定
 
 請於正式環境設置 `SECRET_KEY` 與上述資料庫參數。
+
+### 資料庫初始化
+
+在首次使用前，需要初始化資料庫結構：
+
+**方式一：使用 Python 腳本（推薦）**
+
+```bash
+# 執行初始化腳本
+python3 src/scripts/init_db.py
+
+# 建立預設使用者（從 ENV/.env 讀取設定）
+CREATE_DEFAULT_USER=1 python3 src/scripts/init_db.py
+```
+
+預設使用者資訊可在 `ENV/.env` 檔案中設定：
+- `DEFAULT_USERNAME`: 預設使用者名稱（預設: admin）
+- `DEFAULT_PASSWORD`: 預設密碼（預設: admin123）
+- `DEFAULT_EMAIL`: 預設電子郵件（預設: admin@example.com）
+
+**方式二：使用 SQL 腳本**
+
+```bash
+mysql -u root -p < src/scripts/init_db.sql
+```
+
+**方式三：手動執行 SQL**
+
+參考 [`docs/Database_Schema.md`](docs/Database_Schema.md) 中的 SQL 語句手動執行。
+
+詳細的資料庫結構說明請參考：[`docs/Database_Schema.md`](docs/Database_Schema.md)
 
 ### 程式訊息輸出控制（類似 #ifdef）
 
