@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 - 使用者入口</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #333;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .note {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .flash {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .flash.success {
+            background-color: #d1f8d1;
+            color: #1a7e1a;
+        }
+
+        .flash.warning {
+            background-color: #fff1c2;
+            color: #a97400;
+        }
+
+        .flash.danger {
+            background-color: #ffd6d6;
+            color: #a10000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>使用者登入</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="">
+            <label for="username">帳號</label>
+            <input type="text" id="username" name="username" placeholder="輸入帳號" required>
+
+            <label for="password">密碼</label>
+            <input type="password" id="password" name="password" placeholder="輸入密碼" required>
+
+            <button type="submit">登入</button>
+        </form>
+
+        <p class="note">
+            所有登入請求都會透過參數化查詢處理，避免 SQL Injection。
+        </p>
+        <p class="status">
+            {% if driver_ready %}
+            [OK] 資料庫驅動已就緒，等待 MariaDB 連線資訊。
+            {% else %}
+            [WARN] 尚未安裝 MariaDB Python 驅動（mariadb）。
+            {% endif %}
+        </p>
+    </div>
+</body>
+
+</html>
