@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     username        VARCHAR(50) NOT NULL UNIQUE,
     hashed_password VARCHAR(255) NOT NULL,
     mode            ENUM('NORMAL', 'FITNESS') DEFAULT 'NORMAL',
-    budget          DECIMAL(8,2),       -- 單餐預算上限
+    budget          DECIMAL(8,2) DEFAULT 0,       -- 單餐預算上限
     target_calories INT,
     target_protein  FLOAT,
     target_fat      FLOAT,
