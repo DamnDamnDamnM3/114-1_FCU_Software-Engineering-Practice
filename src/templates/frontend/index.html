@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ByteBite - UI 整合展示</title>
     <!-- 引入 Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+
     <style>
         /* 顏色變數定義 */
         :root {
@@ -16,8 +17,10 @@
             --text-dark: #333;
             --border-light: #ccc;
             /* 字體使用預設 */
-            --font-serif: Georgia, 'Times New Roman', Times, serif; /* for logo */
-            --font-sans: Arial, Helvetica, sans-serif; /* for body */
+            --font-serif: Georgia, 'Times New Roman', Times, serif;
+            /* for logo */
+            --font-sans: Arial, Helvetica, sans-serif;
+            /* for body */
         }
 
         /* 全域基本樣式 */
@@ -33,7 +36,8 @@
         }
 
         .container {
-            max-width: 1000px; /* 桌面固定寬度 */
+            max-width: 1000px;
+            /* 桌面固定寬度 */
             margin: 20px auto;
             padding: 0 20px;
         }
@@ -44,9 +48,10 @@
             color: var(--white);
             display: flex;
             /* 保持 Logo 和 User Icon 在 40px padding 邊界內 */
-            justify-content: space-between; 
+            justify-content: space-between;
             align-items: center;
-            padding: 0 40px; /* 左右邊距 40px */
+            padding: 0 40px;
+            /* 左右邊距 40px */
             height: 80px;
         }
 
@@ -56,27 +61,29 @@
             display: flex;
             align-items: center;
             overflow: hidden;
-            flex-shrink: 0; 
-        }                                                                                                                                   
+            flex-shrink: 0;
+        }
 
         .logo-img {
             height: 100%;
             object-fit: contain;
             width: auto;
-            background-color: var(--primary-blue); 
+            background-color: var(--primary-blue);
         }
 
         .nav-links {
             display: flex;
-            flex-grow: 1; 
-            justify-content: flex-end; /* 讓連結靠右對齊 (置右) */
-            gap: 150px; /* 連結彼此之間的間距 */
+            flex-grow: 1;
+            justify-content: flex-end;
+            /* 讓連結靠右對齊 (置右) */
+            gap: 150px;
+            /* 連結彼此之間的間距 */
             height: 100%;
-            padding: 0; 
+            padding: 0;
             /* 新增：右邊距，將連結與人物圖標分開 */
-            margin-right: 40px; 
+            margin-right: 40px;
         }
-        
+
         .nav-item {
             color: var(--white);
             text-decoration: none;
@@ -111,43 +118,60 @@
         }
 
         /* --- 圓角 16px (統一規格) --- */
-        .search-input-group, .btn, .filter-section, .filter-btn, .store-card, 
-        .store-hero img, .menu-card, .map-placeholder, .calendar-widget, 
-        .meal-card-btn, .food-entry, .diet-input-form, .favorite-filter .filter-input-group {
-            border-radius: 16px; 
+        .search-input-group,
+        .btn,
+        .filter-section,
+        .filter-btn,
+        .store-card,
+        .store-hero img,
+        .menu-card,
+        .map-placeholder,
+        .calendar-widget,
+        .meal-card-btn,
+        .food-entry,
+        .diet-input-form,
+        .favorite-filter .filter-input-group {
+            border-radius: 16px;
         }
 
         /* --- 輔助類別 --- */
         .page-section {
-            display: none; /* 預設隱藏所有頁面，透過 JS 切換 */
+            display: none;
+            /* 預設隱藏所有頁面，透過 JS 切換 */
         }
+
         .page-section.active {
             display: block;
         }
+
         .primary-color {
             color: var(--primary-blue) !important;
         }
-        .btn-primary { 
-            background-color: var(--primary-blue); 
-            color: var(--white); 
-            font-weight: bold; 
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: bold;
         }
+
         .btn-secondary {
             background-color: var(--gray-bg);
             color: var(--primary-blue);
             font-weight: bold;
             border: 1px solid var(--primary-blue);
         }
+
         .btn-danger {
             background-color: #dc3545;
             color: var(--white);
             font-weight: bold;
         }
-        .btn { 
-            padding: 10px 30px; 
-            border: none; 
-            font-size: 1em; 
-            cursor: pointer; 
+
+        .btn {
+            padding: 10px 30px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -161,6 +185,7 @@
             margin-bottom: 30px;
             align-items: center;
         }
+
         .search-input-group {
             flex-grow: 1;
             display: flex;
@@ -168,25 +193,47 @@
             background-color: var(--gray-bg);
             padding: 10px 25px;
         }
-        .search-input-group i { color: #888; font-size: 1.1em; }
-        .search-input-group input { flex-grow: 1; border: none; background: none; font-size: 1em; padding: 0 10px; outline: none;}
+
+        .search-input-group i {
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        .search-input-group input {
+            flex-grow: 1;
+            border: none;
+            background: none;
+            font-size: 1em;
+            padding: 0 10px;
+            outline: none;
+        }
 
         /* 重置按鈕容器調整 */
-        .filter-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 15px; 
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
+
         .filter-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .filter-section h3 { color: var(--primary-blue); font-size: 1.1em; }
-        .vegetarian-toggle { display: flex; align-items: center; gap: 10px; font-size: 0.9em; }
-        
+        .filter-section h3 {
+            color: var(--primary-blue);
+            font-size: 1.1em;
+        }
+
+        .vegetarian-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
         #reset-filters {
             padding: 5px 10px;
             font-size: 0.85em;
@@ -197,40 +244,53 @@
             cursor: pointer;
             transition: background-color 0.1s;
         }
+
         #reset-filters:hover {
             background-color: var(--gray-bg);
         }
 
 
         /* 類別按鈕容器 - 採用 Grid 佈局實現均勻分佈 */
-        .category-filters { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
-            gap: 10px; 
-            margin-bottom: 20px; 
-            border: 1px solid var(--primary-blue); 
-            padding: 10px; 
-            border-radius: 16px; 
+        .category-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--primary-blue);
+            padding: 10px;
+            border-radius: 16px;
         }
 
-        .price-filters { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-        .price-title { margin-top: 15px; margin-bottom: 10px !important; }
+        .price-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .price-title {
+            margin-top: 15px;
+            margin-bottom: 10px !important;
+        }
 
         /* filter-btn: 通用設定 */
         .filter-btn {
-            height: 36px; /* 固定高度 */
-            display: flex; 
+            height: 36px;
+            /* 固定高度 */
+            display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0; 
-            
+            padding: 0;
+
             border: 1px solid var(--primary-blue);
-            font-size: 1em; /* 統一字體大小 */
+            font-size: 1em;
+            /* 統一字體大小 */
             cursor: pointer;
             transition: all 0.2s;
             background-color: var(--gray-bg);
             color: var(--primary-blue);
         }
+
         .filter-btn.selected {
             background-color: var(--primary-blue);
             color: var(--white);
@@ -238,10 +298,10 @@
 
         /* --- 價格按鈕專用樣式 (統一為 16px 圓角矩形，移除粗體) --- */
         .price-filters .filter-btn {
-            padding: 10px 20px; 
-            height: auto; 
-            font-size: 1em; 
-            border-radius: 16px !important; 
+            padding: 10px 20px;
+            height: auto;
+            font-size: 1em;
+            border-radius: 16px !important;
         }
 
         /* 價格按鈕：未選中 (灰底藍框) */
@@ -263,6 +323,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
+
         .store-card {
             text-decoration: none;
             color: inherit;
@@ -270,76 +331,214 @@
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .store-card img { width: 100%; height: 180px; object-fit: cover; }
-        .store-info { display: flex; justify-content: space-between; align-items: center; padding: 10px 10px 0; }
-        .store-name { font-weight: bold; color: var(--text-dark); font-size: 1.1em; } /* 保持店名粗體 */
-        .distance { font-size: 0.9em; color: #666; }
-        .store-rating { display: flex; justify-content: space-between; padding: 0 10px 10px; font-size: 0.9em; }
-        .stars { color: #FFC107; } /* 確保星星是黃色 */
+
+        .store-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .store-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 10px 0;
+        }
+
+        .store-name {
+            font-weight: bold;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+
+        /* 保持店名粗體 */
+        .distance {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .store-rating {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px 10px;
+            font-size: 0.9em;
+        }
+
+        .stars {
+            color: #FFC107;
+        }
+
+        /* 確保星星是黃色 */
 
 
         /* 素食切換開關 (Toggles) */
-        .switch { position: relative; display: inline-block; width: 40px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;}
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%;}
-        input:checked + .slider { background-color: var(--primary-blue); }
-        input:checked + .slider:before { transform: translateX(16px); }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(16px);
+        }
 
 
         /* --- 店家詳情頁 (Frame 2) 樣式 --- */
-        .store-hero img { width: 100%; max-height: 400px; object-fit: cover; margin-bottom: 20px; }
-        .store-details { margin-bottom: 30px; }
-        
+        .store-hero img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .store-details {
+            margin-bottom: 30px;
+        }
+
         /* 新增樣式：讓 ID 顯示為大、粗、黑色的標題 */
-        #detail-description { 
-            font-size: 1.5em; /* 字體加大 */
-            font-weight: bold; /* 字體加粗 */
-            color: var(--text-dark); /* 黑色/深灰 */
-            margin-bottom: 20px; 
+        #detail-description {
+            font-size: 1.5em;
+            /* 字體加大 */
+            font-weight: bold;
+            /* 字體加粗 */
+            color: var(--text-dark);
+            /* 黑色/深灰 */
+            margin-bottom: 20px;
             line-height: 1.3;
         }
 
-        .store-details p { margin-bottom: 10px; line-height: 1.4; color: #666;} /* 預防其他 p 標籤被影響 */
-        .store-meta { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            margin-bottom: 20px; 
+        .store-details p {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #666;
         }
-        .rating-stars { color: #FFC107; font-size: 1.2em; }
-        .price-meta { font-size: 1.2em; font-weight: bold; color: #666; }
-        
+
+        /* 預防其他 p 標籤被影響 */
+        .store-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .rating-stars {
+            color: #FFC107;
+            font-size: 1.2em;
+        }
+
+        .price-meta {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #666;
+        }
+
         /* 追蹤圖標樣式 */
         .follow-icon {
-            margin-left: auto; /* 推到最右邊 */
-            font-size: 2em; /* 讓愛心大一點，作為獨立按鈕 */
-            color: var(--primary-blue); /* 預設顏色 */
+            margin-left: auto;
+            /* 推到最右邊 */
+            font-size: 2em;
+            /* 讓愛心大一點，作為獨立按鈕 */
+            color: var(--primary-blue);
+            /* 預設顏色 */
             cursor: pointer;
             transition: color 0.1s;
         }
+
         .follow-icon:hover {
-            color: #ff4500; /* 懸停效果 */
+            color: #ff4500;
+            /* 懸停效果 */
         }
+
         .follow-icon.followed {
-            color: #ff4500; /* 實心後的顏色 */
+            color: #ff4500;
+            /* 實心後的顏色 */
         }
 
 
-        .menu-preview h4 { margin-bottom: 15px; font-size: 1.2em; color: var(--primary-blue); }
-        .menu-cards { display: flex; gap: 20px; margin-bottom: 40px; }
+        .menu-preview h4 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            color: var(--primary-blue);
+        }
+
+        .menu-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
         .menu-card {
             width: 33%;
             border: 1px solid var(--gray-bg);
             overflow: hidden;
             text-align: center;
         }
-        .menu-card img { width: 100%; height: 150px; object-fit: cover; }
-        .menu-card p { padding: 5px; font-weight: bold; }
-        .menu-card span { display: block; padding-bottom: 10px; color: var(--primary-blue); font-weight: bold; }
 
-        .map-section h4 { margin-bottom: 15px; font-size: 1em; color: #666; }
-        .map-placeholder { width: 100%; height: 300px; background-color: #f0f0f0; border: 1px solid #ccc; }
+        .menu-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .menu-card p {
+            padding: 5px;
+            font-weight: bold;
+        }
+
+        .menu-card span {
+            display: block;
+            padding-bottom: 10px;
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        .map-section h4 {
+            margin-bottom: 15px;
+            font-size: 1em;
+            color: #666;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 300px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
 
 
         /* --- 我的飲食頁 (Frame 3/5) 樣式 - 新版佈局 --- */
@@ -349,21 +548,24 @@
             display: flex;
             gap: 40px;
             /* 修改：設定為 stretch，讓兩邊等高 */
-            align-items: stretch; 
+            align-items: stretch;
             margin-bottom: 20px;
         }
-        
+
         /* 側邊日曆寬度 */
-        .diet-sidebar { width: 260px; flex-shrink: 0; } 
-        
+        .diet-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
         /* 右側餐次按鈕容器：填滿剩餘空間 */
         .meal-buttons-container {
-            flex-grow: 1; 
-            display: flex; 
-            flex-direction: column; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
             /* 移除這裡的 gap，改由內部的 justify-content 控制 */
         }
-        
+
         /* 下半部：輸入表單 + 統計 (垂直排列，佔滿全寬) */
         .diet-bottom-section {
             width: 100%;
@@ -371,92 +573,153 @@
         }
 
         /* 日曆 - 移除 margin-bottom 以確保高度計算準確 */
-        .calendar-widget { margin-bottom: 0; border: 1px solid var(--gray-bg); padding: 15px; text-align: center; height: 100%; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 0.9em; }
-        .cal-day { 
-            padding: 8px 0; 
-            border-radius: 50%; 
+        .calendar-widget {
+            margin-bottom: 0;
+            border: 1px solid var(--gray-bg);
+            padding: 15px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .cal-day {
+            padding: 8px 0;
+            border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.1s;
-            width: 30px; 
+            width: 30px;
             height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: auto;
         }
+
         .cal-day:hover {
             background-color: var(--gray-bg);
         }
-        .cal-weekday { font-weight: bold; color: #999; }
-        .cal-day.selected { 
-            background-color: var(--primary-blue); 
-            color: var(--white); 
-            font-weight: bold; 
+
+        .cal-weekday {
+            font-weight: bold;
+            color: #999;
         }
-        .cal-day.not-in-month { color: #ccc; }
+
+        .cal-day.selected {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        .cal-day.not-in-month {
+            color: #ccc;
+        }
 
         /* 餐次輸入區 - 修改：使用 space-between 讓按鈕平均分佈在日曆的高度內 */
-        .meal-input-section { 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; /* 關鍵：平均分佈垂直空間 */
-            height: 100%; /* 填滿容器高度 */
-            gap: 10px; /* 最小間距，避免太擠 */
-            margin-bottom: 0; 
-        } 
-        
+        .meal-input-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* 關鍵：平均分佈垂直空間 */
+            height: 100%;
+            /* 填滿容器高度 */
+            gap: 10px;
+            /* 最小間距，避免太擠 */
+            margin-bottom: 0;
+        }
+
         .meal-card-btn {
             display: grid;
-            grid-template-columns: 1fr auto 1fr; /* 左(彈性) 中(自適應) 右(彈性) */
+            grid-template-columns: 1fr auto 1fr;
+            /* 左(彈性) 中(自適應) 右(彈性) */
             align-items: center;
-            
+
             /* 修改：加大按鈕高度/內邊距 */
-            padding: 20px 25px; 
-            
+            padding: 20px 25px;
+
             background-color: var(--white);
             cursor: pointer;
             font-size: 1.1em;
             font-weight: bold;
             color: var(--primary-blue);
-            border: 3px solid transparent; 
+            border: 3px solid transparent;
             transition: border-color 0.15s;
-            border-radius: 16px; 
+            border-radius: 16px;
         }
+
         .meal-card-btn:not(.selected) {
             border-color: var(--border-light);
-            border-width: 2px; 
+            border-width: 2px;
         }
+
         .meal-card-btn.selected {
-            border-color: var(--primary-blue); 
-            border-width: 3px; 
+            border-color: var(--primary-blue);
+            border-width: 3px;
         }
-        
-        .meal-card-btn span:first-child { 
+
+        .meal-card-btn span:first-child {
             justify-self: start;
-            font-size: 1.25em; 
+            font-size: 1.25em;
         }
-        .meal-card-btn span:nth-child(2) { 
+
+        .meal-card-btn span:nth-child(2) {
             justify-self: center;
-            color: var(--text-dark); 
-            font-size: 0.9em; 
+            color: var(--text-dark);
+            font-size: 0.9em;
             font-weight: normal;
         }
-        .meal-card-btn i { 
+
+        .meal-card-btn i {
             justify-self: end;
-            font-size: 1.2em; 
+            font-size: 1.2em;
         }
 
 
         /* 營養素總覽 */
-        .nutrient-summary h3 { margin-bottom: 15px; font-size: 1em; color: var(--primary-blue); }
-        #total-summary { display: block; } 
-        #meal-detail-container { display: none; }
+        .nutrient-summary h3 {
+            margin-bottom: 15px;
+            font-size: 1em;
+            color: var(--primary-blue);
+        }
+
+        #total-summary {
+            display: block;
+        }
+
+        #meal-detail-container {
+            display: none;
+        }
 
 
-        .nutrient-pills { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 15px; }
-        .pill-label { background-color: var(--primary-blue); color: var(--white); padding: 5px 10px; border-radius: 20px; font-size: 0.9em; text-align: center; }
+        .nutrient-pills {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pill-label {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
         .summary-values {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -466,8 +729,17 @@
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
-        .summary-value p:first-child { font-weight: bold; font-size: 1.2em; color: var(--primary-blue); }
-        .summary-value p:last-child { font-size: 0.8em; color: #666; }
+
+        .summary-value p:first-child {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-blue);
+        }
+
+        .summary-value p:last-child {
+            font-size: 0.8em;
+            color: #666;
+        }
 
         /* 飲食細節 */
         .food-entry {
@@ -477,15 +749,27 @@
             flex-direction: column;
             gap: 10px;
         }
-        .entry-title { font-weight: bold; color: var(--primary-blue); }
+
+        .entry-title {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
         .entry-nutrients {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             text-align: center;
             font-size: 0.9em;
         }
-        .entry-nutrient p:first-child { font-weight: bold; }
-        .entry-nutrient p:last-child { font-size: 0.8em; color: #666; }
+
+        .entry-nutrient p:first-child {
+            font-weight: bold;
+        }
+
+        .entry-nutrient p:last-child {
+            font-size: 0.8em;
+            color: #666;
+        }
 
         /* 飲食輸入表單 (Frame 5) - 全寬版配置 */
         .diet-input-form {
@@ -498,33 +782,38 @@
         .diet-input-form .nutrient-pills {
             /* 2fr 給食物名稱，其餘 6 欄各 1fr */
             display: grid;
-            grid-template-columns: 2fr repeat(6, 1fr); 
-            gap: 10px; 
+            grid-template-columns: 2fr repeat(6, 1fr);
+            gap: 10px;
             margin-bottom: 10px;
         }
+
         .diet-input-form .nutrient-pills .pill-label:first-child {
-            text-align: center; 
+            text-align: center;
             padding-left: 0;
         }
+
         .pill-label {
-             font-size: 0.95em;
+            font-size: 0.95em;
         }
 
         .input-row {
             display: grid;
-            grid-template-columns: 2fr repeat(6, 1fr); /* 與標題對齊 */
+            grid-template-columns: 2fr repeat(6, 1fr);
+            /* 與標題對齊 */
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .input-row input {
-            padding: 10px 5px; 
+            padding: 10px 5px;
             border: 1px solid #ccc;
             font-size: 1em;
             text-align: center;
-            width: 100%; 
-            min-width: 0; 
+            width: 100%;
+            min-width: 0;
             border-radius: 4px;
         }
+
         .input-row input:first-child {
             text-align: center;
         }
@@ -535,6 +824,7 @@
             gap: 15px;
             align-items: center;
         }
+
         .action-buttons .spacer {
             flex-grow: 1;
         }
@@ -544,6 +834,7 @@
         .favorite-filter {
             margin-bottom: 30px;
         }
+
         .favorite-filter .filter-input-group {
             display: flex;
             align-items: center;
@@ -552,11 +843,13 @@
             border: 1px solid var(--gray-bg);
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
         }
+
         .favorite-filter label {
             font-weight: bold;
             color: var(--primary-blue);
             white-space: nowrap;
         }
+
         .favorite-filter select {
             padding: 8px 15px;
             border: 1px solid #ccc;
@@ -564,6 +857,7 @@
             font-size: 1em;
             min-width: 120px;
         }
+
         .large-filter-input {
             flex-grow: 1;
             padding: 10px 15px;
@@ -573,6 +867,7 @@
         }
     </style>
 </head>
+
 <body>
     <header class="navbar">
         <div class="logo-container">
@@ -587,7 +882,7 @@
             <i class="fa-solid fa-user"></i>
         </diV>
     </header>
-    
+
     <main class="container">
         <!-- ======================================================= -->
         <!-- 1. 搜尋頁面 (Frame 1) -->
@@ -618,7 +913,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- 類別按鈕清單 (已使用 Grid 佈局修正均勻分佈問題) -->
                 <div class="category-filters">
                     <button class="filter-btn">日式</button>
@@ -695,7 +990,7 @@
         <!-- 3. 我的飲食頁 (Frame 3 & 5) -->
         <!-- ======================================================= -->
         <section class="page-section" id="diet-page">
-            
+
             <!-- 上半部：日曆與餐次按鈕 (並排) -->
             <div class="diet-top-section">
                 <!-- 左側：日曆 -->
@@ -773,10 +1068,11 @@
                         <button class="btn btn-secondary"><i class="fa-solid fa-camera"></i> 上傳圖片</button>
                         <div class="spacer"></div>
                         <button class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> 刪除</button>
-                        <button class="btn btn-primary" id="save-diet-btn"><i class="fa-solid fa-floppy-disk"></i> 儲存</button>
+                        <button class="btn btn-primary" id="save-diet-btn"><i class="fa-solid fa-floppy-disk"></i>
+                            儲存</button>
                     </div>
                 </section>
-                
+
                 <!-- 總體摘要 (預設顯示) -->
                 <div id="total-summary">
                     <section class="nutrient-summary">
@@ -788,12 +1084,30 @@
                         </div>
                         <div class="summary-values" id="total-summary-values">
                             <!-- 預設為 0 -->
-                            <div class="summary-value"><p>0</p><p>大卡</p></div>
-                            <div class="summary-value"><p>0</p><p>公克</p></div>
-                            <div class="summary-value"><p>0</p><p>公克</p></div>
-                            <div class="summary-value"><p>0</p><p>公克</p></div>
-                            <div class="summary-value"><p>0</p><p>公克</p></div>
-                            <div class="summary-value"><p>0</p><p>毫克</p></div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>大卡</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>毫克</p>
+                            </div>
                         </div>
                     </section>
                 </div>
@@ -844,37 +1158,39 @@
     </main>
 
     <script>
-        // 模擬的店家資料 (已更新 descriptions)
-        const storeData = [
-            { id: 1, name: '九湯屋日式拉麵 逢甲店', rating: '★★★★☆ 4.0', priceRange: '$ 1 ~ 200', priceMeta: '$', distance: '0.8 km', heroImg: 'placeholder-store-1.jpg', description: '九湯屋日式拉麵 逢甲店', menu: [{name: '豚骨拉麵', price: '$150'}, {name: '味噌拉麵', price: '$140'}] },
-            { id: 2, name: '泰壽司-西屯熱門美食', rating: '★★★★☆ 4.5', priceRange: '$ 200 ~ 400', priceMeta: '$$', distance: '1.1 km', heroImg: 'placeholder-store-4.jpg', description: '泰壽司-西屯熱門美食 | 烏龍麵 | 握壽司 | 好吃的湯 | 平價日料 | 台中美食 | 日本料理 | 台中美食地圖 | restaurants | Seafood | Cheap eats', menu: [{name: '鮭魚丼飯', price: '$275'}, {name: '綜合刺身', price: '$350'}] },
-            { id: 3, name: '麥當勞-台中河南店', rating: '★★★★★ 4.8', priceRange: '$ 1 ~ 200', priceMeta: '$', distance: '1.0 km', heroImg: 'placeholder-store-2.jpg', description: '麥當勞-台中河南店', menu: [{name: '大麥克套餐', price: '$159'}, {name: '麥克雞塊', price: '$100'}] },
-            { id: 4, name: '力軒屋', rating: '★★★★☆ 4.2', priceRange: '$ 1 ~ 200', priceMeta: '$', distance: '0.8 km', heroImg: 'placeholder-store-3.jpg', description: '力軒屋', menu: [{name: '滷肉飯', price: '$50'}, {name: '排骨便當', price: '$90'}] },
-        ];
-        
-        // --- 修正：初始化為空陣列 ---
-        let dailyDietData = []; 
+        // API 基礎 URL
+        const API_BASE = '/api';
 
-        // 收藏狀態變數 (儲存 ID)
-        let favorites = []; 
-        let currentStoreId = null; 
-        
+        // 使用者 ID（實際應用中應該從 session 或登入狀態取得）
+        const USER_ID = 'user_001';
+
+        // 店家資料（從 API 載入）
+        let storeData = [];
+
+        // --- 修正：初始化為空陣列 ---
+        let dailyDietData = [];
+
+        // 收藏狀態變數 (儲存 restaurant_id)
+        let favorites = [];
+        let currentStoreId = null;
+        let currentRestaurantId = null;
+
         // 月曆狀態
-        let currentMonth = new Date(); 
-        let selectedDate = currentMonth.getDate(); 
+        let currentMonth = new Date();
+        let selectedDate = currentMonth.getDate();
 
 
         // 頁面切換邏輯
         document.addEventListener('DOMContentLoaded', () => {
             const navLinks = document.querySelectorAll('.nav-item');
             const pageSections = document.querySelectorAll('.page-section');
-            const followIcon = document.getElementById('follow-icon'); 
+            const followIcon = document.getElementById('follow-icon');
             const categoryButtons = document.querySelectorAll('.category-filters .filter-btn');
             const priceButtons = document.querySelectorAll('.price-filters .filter-btn');
             const vegetarianToggle = document.getElementById('vegetarian-toggle');
             const resetFiltersButton = document.getElementById('reset-filters');
             const storeListContainer = document.getElementById('store-list-container');
-            
+
             // 我的飲食頁面元素
             const monthYearDisplay = document.getElementById('current-month-year');
             const calendarGrid = document.getElementById('calendar-grid');
@@ -888,7 +1204,7 @@
             const mealFoodList = document.getElementById('meal-food-list');
             const totalSummaryValues = document.getElementById('total-summary-values');
             const saveDietBtn = document.getElementById('save-diet-btn');
-            
+
             // 輸入框元素
             const inputName = document.getElementById('food-name');
             const inputCals = document.getElementById('food-cals');
@@ -911,19 +1227,159 @@
                 if (navElement) navElement.classList.add('selected');
 
                 if (targetId === 'store-detail-page' && storeId !== null) {
-                    const store = storeData.find(s => s.id === storeId);
-                    if (store) {
-                        currentStoreId = storeId; 
-                        renderStoreDetail(store);
-                    }
+                    loadStoreDetail(storeId);
                 } else if (targetId === 'diet-page') {
                     renderCalendar(currentMonth);
                     resetMealView();
+                    loadDietData();
                 } else if (targetId === 'favorite-page') {
-                    renderFavorites(); 
+                    loadFavorites();
                 }
             }
-            
+
+            // API 呼叫函式
+            async function fetchStores(filters = {}) {
+                try {
+                    const params = new URLSearchParams();
+                    if (filters.keyword) params.append('keyword', filters.keyword);
+                    if (filters.categories && filters.categories.length > 0) {
+                        params.append('categories', filters.categories.join(','));
+                    }
+                    if (filters.price) params.append('price', filters.price);
+                    if (filters.vegetarian) params.append('vegetarian', 'true');
+                    params.append('user_id', USER_ID);
+
+                    const response = await fetch(`${API_BASE}/stores?${params.toString()}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        return result.data;
+                    } else {
+                        console.error('取得餐廳列表失敗:', result.error);
+                        return [];
+                    }
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return [];
+                }
+            }
+
+            async function fetchStoreDetail(storeId) {
+                try {
+                    const response = await fetch(`${API_BASE}/stores/${storeId}?user_id=${USER_ID}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        return result.data;
+                    } else {
+                        console.error('取得餐廳詳情失敗:', result.error);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return null;
+                }
+            }
+
+            async function fetchFavorites() {
+                try {
+                    const response = await fetch(`${API_BASE}/favorites?user_id=${USER_ID}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        return result.data;
+                    } else {
+                        console.error('取得收藏列表失敗:', result.error);
+                        return [];
+                    }
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return [];
+                }
+            }
+
+            async function addFavorite(restaurantId) {
+                try {
+                    const response = await fetch(`${API_BASE}/favorites`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: USER_ID,
+                            restaurant_id: restaurantId
+                        })
+                    });
+                    const result = await response.json();
+                    return result.success;
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return false;
+                }
+            }
+
+            async function removeFavorite(restaurantId) {
+                try {
+                    const response = await fetch(`${API_BASE}/favorites`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: USER_ID,
+                            restaurant_id: restaurantId
+                        })
+                    });
+                    const result = await response.json();
+                    return result.success;
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return false;
+                }
+            }
+
+            async function fetchDietLogs(date = null, meal = null) {
+                try {
+                    const params = new URLSearchParams();
+                    params.append('user_id', USER_ID);
+                    if (date) params.append('date', date);
+                    if (meal) params.append('meal', meal);
+
+                    const response = await fetch(`${API_BASE}/diet?${params.toString()}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        return result.data;
+                    } else {
+                        console.error('取得飲食記錄失敗:', result.error);
+                        return [];
+                    }
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return [];
+                }
+            }
+
+            async function saveDietLog(dietData) {
+                try {
+                    const response = await fetch(`${API_BASE}/diet`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: USER_ID,
+                            ...dietData
+                        })
+                    });
+                    const result = await response.json();
+                    return result.success ? result.data : null;
+                } catch (error) {
+                    console.error('API 錯誤:', error);
+                    return null;
+                }
+            }
+
             function resetAllFilters() {
                 categoryButtons.forEach(button => {
                     button.classList.remove('selected');
@@ -932,6 +1388,25 @@
                     button.classList.remove('selected');
                 });
                 console.log("分類及價格篩選條件已重置。");
+                loadStores();
+            }
+
+            async function loadStores() {
+                const selectedCategories = Array.from(categoryButtons)
+                    .filter(btn => btn.classList.contains('selected'))
+                    .map(btn => btn.textContent);
+                const selectedPrice = Array.from(priceButtons)
+                    .find(btn => btn.classList.contains('selected'))?.textContent || '';
+                const isVegetarian = vegetarianToggle?.checked || false;
+                const keyword = document.querySelector('.search-input-group input')?.value || '';
+
+                storeData = await fetchStores({
+                    keyword: keyword,
+                    categories: selectedCategories,
+                    price: selectedPrice,
+                    vegetarian: isVegetarian
+                });
+
                 renderStoreList(storeData);
             }
 
@@ -954,7 +1429,7 @@
                     <div class="summary-value"><p>${total.sugar}</p><p>公克</p></div>
                     <div class="summary-value"><p>${total.sodium}</p><p>毫克</p></div>
                 `;
-                
+
                 mealButtons.forEach(btn => {
                     const mealType = btn.getAttribute('data-meal');
                     const mealCals = data
@@ -963,10 +1438,10 @@
                     btn.querySelector('.meal-cal-summary').textContent = `已攝取：約 ${mealCals} 大卡`;
                 });
             }
-            
+
             function renderMealDetails(mealType, data) {
                 const mealItems = data.filter(item => item.meal === mealType);
-                
+
                 const total = mealItems.reduce((acc, item) => {
                     acc.cals += item.cals || 0;
                     acc.carbs += item.carbs || 0;
@@ -988,7 +1463,7 @@
                 `;
 
                 if (mealItems.length === 0) {
-                     mealFoodList.innerHTML = '<p style="text-align: center; color: #999;">尚未新增資料</p>';
+                    mealFoodList.innerHTML = '<p style="text-align: center; color: #999;">尚未新增資料</p>';
                 } else {
                     mealFoodList.innerHTML = mealItems.map(item => `
                         <div class="food-entry">
@@ -1005,9 +1480,9 @@
                     `).join('');
                 }
             }
-            
+
             function getMealName(type) {
-                switch(type) {
+                switch (type) {
                     case 'breakfast': return '早餐';
                     case 'lunch': return '午餐';
                     case 'dinner': return '晚餐';
@@ -1025,7 +1500,7 @@
             }
 
             // --- 儲存功能 ---
-            saveDietBtn.addEventListener('click', () => {
+            saveDietBtn.addEventListener('click', async () => {
                 // 找出當前選中的餐次
                 const selectedBtn = document.querySelector('.meal-card-btn.selected');
                 if (!selectedBtn) {
@@ -1033,7 +1508,7 @@
                     return;
                 }
                 const mealType = selectedBtn.getAttribute('data-meal');
-                
+
                 // 獲取輸入值
                 const name = inputName.value.trim();
                 const cals = parseInt(inputCals.value) || 0;
@@ -1042,15 +1517,28 @@
                 const fat = parseInt(inputFat.value) || 0;
                 const sugar = parseInt(inputSugar.value) || 0;
                 const sodium = parseInt(inputSodium.value) || 0;
-                
+
                 if (!name) {
                     alert('請輸入食物名稱！');
                     return;
                 }
 
-                // 建立新資料
-                const newItem = {
-                    id: Date.now(), // 簡單的唯一 ID
+                // 取得選中的日期
+                const selectedDateElement = document.querySelector('.cal-day.selected');
+                let date = null;
+                if (selectedDateElement) {
+                    const dateStr = selectedDateElement.getAttribute('data-date');
+                    if (dateStr) {
+                        const dateObj = new Date(dateStr);
+                        date = dateObj.toISOString().split('T')[0];
+                    }
+                }
+                if (!date) {
+                    date = new Date().toISOString().split('T')[0];
+                }
+
+                // 儲存到後端
+                const savedItem = await saveDietLog({
                     meal: mealType,
                     name: name,
                     cals: cals,
@@ -1058,52 +1546,108 @@
                     protein: protein,
                     fat: fat,
                     sugar: sugar,
-                    sodium: sodium
-                };
-                
-                // 加入陣列
-                dailyDietData.push(newItem);
-                
-                // 清空輸入框
-                inputName.value = '';
-                inputCals.value = '';
-                inputCarbs.value = '';
-                inputProtein.value = '';
-                inputFat.value = '';
-                inputSugar.value = '';
-                inputSodium.value = '';
-                
-                // 更新畫面 (總計 + 單餐詳情)
-                renderTotalSummary(dailyDietData);
-                renderMealDetails(mealType, dailyDietData);
-                
-                console.log('已儲存:', newItem);
+                    sodium: sodium,
+                    date: date
+                });
+
+                if (savedItem) {
+                    // 重新載入飲食數據
+                    await loadDietData();
+
+                    // 清空輸入框
+                    inputName.value = '';
+                    inputCals.value = '';
+                    inputCarbs.value = '';
+                    inputProtein.value = '';
+                    inputFat.value = '';
+                    inputSugar.value = '';
+                    inputSodium.value = '';
+
+                    // 更新畫面
+                    renderTotalSummary(dailyDietData);
+                    renderMealDetails(mealType, dailyDietData);
+
+                    console.log('已儲存:', savedItem);
+                } else {
+                    alert('儲存失敗，請稍後再試');
+                }
             });
 
+            async function loadStoreDetail(storeId) {
+                const store = await fetchStoreDetail(storeId);
+                if (store) {
+                    currentStoreId = store.id;
+                    currentRestaurantId = store.restaurant_id;
+                    renderStoreDetail(store);
+                }
+            }
 
-            function handleDayClick() {
+            async function loadFavorites() {
+                const favoriteStores = await fetchFavorites();
+                favorites = favoriteStores.map(s => s.restaurant_id);
+                renderFavorites(favoriteStores);
+            }
+
+            async function loadDietData() {
+                const selectedDateElement = document.querySelector('.cal-day.selected');
+                let date = null;
+                if (selectedDateElement) {
+                    const dateStr = selectedDateElement.getAttribute('data-date');
+                    if (dateStr) {
+                        const dateObj = new Date(dateStr);
+                        date = dateObj.toISOString().split('T')[0];
+                    }
+                }
+                if (!date) {
+                    date = new Date().toISOString().split('T')[0];
+                }
+
+                dailyDietData = await fetchDietLogs(date);
+                renderTotalSummary(dailyDietData);
+            }
+
+
+            async function handleDayClick() {
                 document.querySelectorAll('#calendar-grid .cal-day').forEach(day => day.classList.remove('selected'));
                 this.classList.add('selected');
-                
+
                 const selectedDateStr = this.getAttribute('data-date');
                 selectedDate = parseInt(this.textContent);
                 console.log(`日期 ${selectedDateStr} 被選中。`);
-                resetMealView(); 
+
+                // 載入該日期的飲食數據
+                await loadDietData();
+                resetMealView();
             }
 
-            function handleMealClick() {
+            async function handleMealClick() {
                 const mealType = this.getAttribute('data-meal');
                 const isSelected = this.classList.contains('selected');
 
                 mealButtons.forEach(btn => btn.classList.remove('selected'));
-                
+
                 if (!isSelected) {
                     this.classList.add('selected');
                     totalSummaryContainer.style.display = 'none';
                     mealDetailContainer.style.display = 'block';
                     document.getElementById('diet-form').style.display = 'block';
 
-                    renderMealDetails(mealType, dailyDietData);
+                    // 載入該餐次的數據
+                    const selectedDateElement = document.querySelector('.cal-day.selected');
+                    let date = null;
+                    if (selectedDateElement) {
+                        const dateStr = selectedDateElement.getAttribute('data-date');
+                        if (dateStr) {
+                            const dateObj = new Date(dateStr);
+                            date = dateObj.toISOString().split('T')[0];
+                        }
+                    }
+                    if (!date) {
+                        date = new Date().toISOString().split('T')[0];
+                    }
+
+                    const mealData = await fetchDietLogs(date, mealType);
+                    renderMealDetails(mealType, mealData);
                     console.log(`正在查看 ${mealType} 詳情。`);
                 } else {
                     resetMealView();
@@ -1117,7 +1661,7 @@
                 const currentYear = now.getFullYear();
                 const currentMonthIndex = now.getMonth();
                 const todayDate = now.getDate();
-                
+
                 const year = date.getFullYear();
                 const month = date.getMonth();
 
@@ -1152,21 +1696,21 @@
                     dayElement.classList.add('cal-day', 'in-month');
                     dayElement.textContent = day;
                     dayElement.setAttribute('data-date', dateString);
-                    
+
                     const isToday = year === currentYear && month === currentMonthIndex && day === todayDate;
-                    
+
                     if (isToday) {
                         dayElement.classList.add('selected');
                     } else if (day === selectedDate && year === currentMonth.getFullYear() && month === currentMonth.getMonth()) {
-                         dayElement.classList.add('selected');
+                        dayElement.classList.add('selected');
                     }
-                    
+
                     dayElement.addEventListener('click', handleDayClick);
                     calendarGrid.appendChild(dayElement);
                 }
 
                 const totalCells = firstDayOfMonth + daysInMonth;
-                const cellsNeeded = 42; 
+                const cellsNeeded = 42;
                 let nextDay = 1;
 
                 for (let i = totalCells; i < cellsNeeded; i++) {
@@ -1178,40 +1722,46 @@
             }
 
             function changeMonth(delta) {
-                currentMonth.setDate(1); 
+                currentMonth.setDate(1);
                 currentMonth.setMonth(currentMonth.getMonth() + delta);
                 currentMonth.setDate(Math.min(selectedDate, new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate()));
                 renderCalendar(currentMonth);
             }
-            
+
             function renderStoreList(stores) {
                 // Ensure storeListContainer exists before trying to access innerHTML
                 if (!storeListContainer) {
                     console.error("Store list container not found!");
                     return;
                 }
-                
+
                 storeListContainer.innerHTML = '';
+
+                if (stores.length === 0) {
+                    storeListContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 40px 0;">沒有找到符合條件的餐廳。</p>';
+                    return;
+                }
+
                 stores.forEach(store => {
                     const card = document.createElement('a');
                     card.href = '#';
                     card.classList.add('store-card', 'store-link');
-                    card.setAttribute('data-store-id', store.id);
-                    
+                    card.setAttribute('data-store-id', store.id || store.restaurant_id);
+
                     card.innerHTML = `
-                        <img src="${store.heroImg}" alt="${store.name}">
+                        <img src="${store.heroImg || 'placeholder-store-1.jpg'}" alt="${store.name}">
                         <div class="store-info">
                             <p class="store-name">${store.name}</p>
-                            <span class="distance">${store.distance}</span>
+                            <span class="distance">${store.distance || '0.8 km'}</span>
                         </div>
                         <div class="store-rating">
-                            <span class="stars">${store.rating.split(' ')[0]}</span>
-                            <span class="price-range">${store.priceRange}</span>
+                            <span class="stars">${store.rating ? store.rating.split(' ')[0] : '★★★★☆'}</span>
+                            <span class="price-range">${store.priceRange || '$ 1 ~ 200'}</span>
                         </div>
                     `;
                     storeListContainer.appendChild(card);
                 });
-                
+
                 document.querySelectorAll('.store-link').forEach(link => {
                     link.addEventListener('click', handleStoreLinkClick);
                 });
@@ -1219,40 +1769,44 @@
 
             function handleStoreLinkClick(e) {
                 e.preventDefault();
-                const storeId = parseInt(this.getAttribute('data-store-id'));
+                const storeId = this.getAttribute('data-store-id');
                 setActivePage('store-detail-page', 'nav-search', storeId);
             }
 
 
             function renderStoreDetail(store) {
-                document.getElementById('detail-hero-img').src = store.heroImg;
+                document.getElementById('detail-hero-img').src = store.heroImg || 'placeholder-store-1.jpg';
                 document.getElementById('detail-hero-img').alt = store.name;
-                document.getElementById('detail-description').textContent = store.description;
+                document.getElementById('detail-description').textContent = store.description || store.name;
 
-                const starRating = store.rating.split(' ')[0];
-                const metaText = `${starRating} ${store.rating.split(' ')[1] || ''}`;
+                const starRating = store.rating ? store.rating.split(' ')[0] : '★★★★☆';
+                const metaText = store.rating || '★★★★☆ 4.0';
 
                 document.getElementById('detail-rating-stars').innerHTML = `<i class="fa-solid fa-star"></i> ${metaText}`;
-                document.getElementById('detail-price-meta').textContent = store.priceMeta;
-                document.getElementById('detail-distance').textContent = store.distance;
-                document.getElementById('detail-address').textContent = store.address;
+                document.getElementById('detail-price-meta').textContent = store.priceMeta || '$';
+                document.getElementById('detail-distance').textContent = store.distance || '0.8 km';
+                document.getElementById('detail-address').textContent = store.address || '';
 
                 const menuContainer = document.getElementById('detail-menu-cards');
                 menuContainer.innerHTML = '';
 
-                store.menu.forEach((item, index) => {
-                    const placeholderImg = index % 3 === 0 ? 'dish-1.jpg' : (index % 3 === 1 ? 'dish-2.jpg' : 'dish-3.jpg');
-                    const menuCard = document.createElement('div');
-                    menuCard.classList.add('menu-card');
-                    menuCard.innerHTML = `
-                        <img src="${placeholderImg}" alt="${item.name}">
-                        <p>${item.name}</p>
-                        <span>${item.price}</span>
-                    `;
-                    menuContainer.appendChild(menuCard);
-                });
-                
-                const isFavorited = favorites.includes(store.id);
+                if (store.menu && store.menu.length > 0) {
+                    store.menu.forEach((item, index) => {
+                        const placeholderImg = index % 3 === 0 ? 'dish-1.jpg' : (index % 3 === 1 ? 'dish-2.jpg' : 'dish-3.jpg');
+                        const menuCard = document.createElement('div');
+                        menuCard.classList.add('menu-card');
+                        menuCard.innerHTML = `
+                            <img src="${placeholderImg}" alt="${item.name}">
+                            <p>${item.name}</p>
+                            <span>${item.price}</span>
+                        `;
+                        menuContainer.appendChild(menuCard);
+                    });
+                } else {
+                    menuContainer.innerHTML = '<p style="text-align: center; color: #999;">暫無菜單資訊</p>';
+                }
+
+                const isFavorited = store.is_favorited || favorites.includes(store.restaurant_id);
                 if (followIcon) {
                     if (isFavorited) {
                         followIcon.classList.remove('fa-regular');
@@ -1264,32 +1818,41 @@
                 }
             }
 
-            function renderFavorites() {
+            function renderFavorites(favoriteStores = null) {
                 const container = document.getElementById('favorite-list-container');
-                const filteredStores = storeData.filter(store => favorites.includes(store.id));
                 container.innerHTML = '';
-                
-                if (filteredStores.length === 0) {
+
+                if (!favoriteStores) {
+                    favoriteStores = storeData.filter(store => favorites.includes(store.restaurant_id || store.id));
+                }
+
+                if (favoriteStores.length === 0) {
                     container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px 0;">您的收藏列表是空的。</p>';
                     return;
                 }
 
-                filteredStores.forEach(store => {
-                    const card = document.createElement('div');
-                    card.classList.add('store-card');
-                    
+                favoriteStores.forEach(store => {
+                    const card = document.createElement('a');
+                    card.href = '#';
+                    card.classList.add('store-card', 'store-link');
+                    card.setAttribute('data-store-id', store.id || store.restaurant_id);
+
                     card.innerHTML = `
-                        <img src="${store.heroImg}" alt="${store.name}">
+                        <img src="${store.heroImg || 'placeholder-store-1.jpg'}" alt="${store.name}">
                         <div class="store-info">
                             <p class="store-name">${store.name}</p>
-                            <span class="distance">${store.distance}</span>
+                            <span class="distance">${store.distance || '0.8 km'}</span>
                         </div>
                         <div class="store-rating">
-                            <span class="stars">${store.rating.split(' ')[0]}</span>
-                            <span class="price-range">${store.priceRange}</span>
+                            <span class="stars">${store.rating ? store.rating.split(' ')[0] : '★★★★☆'}</span>
+                            <span class="price-range">${store.priceRange || '$ 1 ~ 200'}</span>
                         </div>
                     `;
                     container.appendChild(card);
+                });
+
+                document.querySelectorAll('.store-link').forEach(link => {
+                    link.addEventListener('click', handleStoreLinkClick);
                 });
             }
 
@@ -1314,21 +1877,31 @@
 
             // 追蹤圖標點擊事件 (愛心切換 & 不跳轉)
             if (followIcon) {
-                followIcon.addEventListener('click', (e) => {
+                followIcon.addEventListener('click', async (e) => {
                     e.preventDefault();
-                    
-                    if (currentStoreId === null) return; // 確保有店家 ID
 
-                    if (followIcon.classList.contains('fa-regular')) {
-                        favorites.push(currentStoreId);
-                        followIcon.classList.remove('fa-regular');
-                        followIcon.classList.add('fa-solid', 'followed');
-                        console.log(`店家 ${currentStoreId} 已收藏。當前收藏:`, favorites);
+                    if (!currentRestaurantId) return; // 確保有餐廳 ID
+
+                    const isFavorited = followIcon.classList.contains('fa-solid');
+
+                    if (!isFavorited) {
+                        // 加入收藏
+                        const success = await addFavorite(currentRestaurantId);
+                        if (success) {
+                            favorites.push(currentRestaurantId);
+                            followIcon.classList.remove('fa-regular');
+                            followIcon.classList.add('fa-solid', 'followed');
+                            console.log(`店家 ${currentRestaurantId} 已收藏。`);
+                        }
                     } else {
-                        favorites = favorites.filter(id => id !== currentStoreId);
-                        followIcon.classList.remove('fa-solid', 'followed');
-                        followIcon.classList.add('fa-regular');
-                        console.log(`店家 ${currentStoreId} 已取消收藏。當前收藏:`, favorites);
+                        // 移除收藏
+                        const success = await removeFavorite(currentRestaurantId);
+                        if (success) {
+                            favorites = favorites.filter(id => id !== currentRestaurantId);
+                            followIcon.classList.remove('fa-solid', 'followed');
+                            followIcon.classList.add('fa-regular');
+                            console.log(`店家 ${currentRestaurantId} 已取消收藏。`);
+                        }
                     }
                 });
             }
@@ -1346,7 +1919,7 @@
                 button.addEventListener('click', () => {
                     const isSelected = button.classList.contains('selected');
                     priceButtons.forEach(btn => btn.classList.remove('selected'));
-                    
+
                     if (!isSelected) {
                         button.classList.add('selected');
                         console.log(`價格按鈕 ${button.textContent} 被選中.`);
@@ -1357,13 +1930,51 @@
             });
 
 
+            // 搜尋按鈕事件
+            const searchButton = document.querySelector('.search-bar-section .btn-primary');
+            if (searchButton) {
+                searchButton.addEventListener('click', () => {
+                    loadStores();
+                });
+            }
+
+            // 搜尋輸入框 Enter 鍵事件
+            const searchInput = document.querySelector('.search-input-group input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        loadStores();
+                    }
+                });
+            }
+
+            // 類別和價格篩選變更時重新載入
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.classList.toggle('selected');
+                    loadStores();
+                });
+            });
+
+            priceButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const isSelected = button.classList.contains('selected');
+                    priceButtons.forEach(btn => btn.classList.remove('selected'));
+
+                    if (!isSelected) {
+                        button.classList.add('selected');
+                    }
+                    loadStores();
+                });
+            });
+
             // --- 啟動初始化 ---
 
             // 修正: 確保所有初始化相關函式在 DOMContentLoaded 綁定後被調用
-            setActivePage('search-page', 'nav-search'); 
-            renderTotalSummary(dailyDietData); 
-            renderStoreList(storeData); // 這裡被補上了
-            mealDetailContainer.style.display = 'none'; 
+            setActivePage('search-page', 'nav-search');
+            loadStores(); // 載入餐廳列表
+            renderTotalSummary(dailyDietData);
+            mealDetailContainer.style.display = 'none';
         });
 
         // 飲食輸入表單切換邏輯 (Frame 3/5)
@@ -1375,4 +1986,5 @@
         }
     </script>
 </body>
+
 </html>
