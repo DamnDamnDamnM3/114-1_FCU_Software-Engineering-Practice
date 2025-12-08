@@ -25,7 +25,8 @@ def create_app():
             "port": int(os.getenv("DB_PORT", 3306)),
             "user": os.getenv("DB_USER", "root"),
             "password": os.getenv("DB_PASSWORD", ""),
-            "database": os.getenv("DB_NAME", "app_db"),
+            # SQL 腳本使用的資料庫名稱為 data，預設值與之對齊
+            "database": os.getenv("DB_NAME", "data"),
         },
     )
 

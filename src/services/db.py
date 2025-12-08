@@ -67,7 +67,13 @@ def get_connection():
 
 def authenticate_user(username: str, password: str) -> Optional[Dict[str, Any]]:
     """驗證使用者帳密，使用參數化查詢避免 SQL injection"""
-    query = "SELECT id, username, password_hash FROM users WHERE username = ? LIMIT 1"
+    # 資料表欄位與 SQL 腳本一致：user_id、hashed_password
+    query = """
+        SELECT user_id AS id, username, hashed_password
+        FROM users
+        WHERE username = ?
+        LIMIT 1
+    """
 
     with get_connection() as conn:
         cursor = conn.cursor(dictionary=True)
@@ -78,7 +84,7 @@ def authenticate_user(username: str, password: str) -> Optional[Dict[str, Any]]:
     if not record:
         return None
 
-    password_hash = record.get("password_hash")
+    password_hash = record.get("hashed_password")
     if password_hash and check_password_hash(password_hash, password):
         return {"id": record["id"], "username": record["username"]}
 
