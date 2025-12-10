@@ -1,6 +1,5 @@
 import csv
 import random
-import uuid
 
 # ==========================================
 # 1. 資料設定 (跟之前一樣)
@@ -45,12 +44,13 @@ def generate_mock_data(total_restaurants=30):
     menu_items = []
     
     types_list = list(STORE_NAMES.keys())
+    item_counter = 1  # 餐點編號從1開始
     
     for i in range(total_restaurants):
         f_type = types_list[i % len(types_list)]
         base_name = random.choice(STORE_NAMES[f_type])
-        r_name = f"{base_name}" if i < 15 else f"{base_name} ({i}號店)"
-        r_id = str(uuid.uuid4())[:8]
+        r_name = f"{base_name}" if i < 15 else f"{base_name} ({i+1}號店)"
+        r_id = str(i + 1)  # 餐廳編號從1開始
         
         if f_type in ["健康餐", "義式", "飲品"]:
             veg_opt = random.choice(["蛋奶素", "全素"])
@@ -77,7 +77,7 @@ def generate_mock_data(total_restaurants=30):
             cal_var = int(dish[2] * random.uniform(0.9, 1.1))
             
             menu_items.append({
-                "itemID": str(uuid.uuid4())[:8],
+                "itemID": str(item_counter),  # 餐點編號從1開始
                 "restaurantID": r_id,
                 "name": dish[0],
                 "description": f"{r_name} 特製的{dish[0]}",
@@ -87,6 +87,7 @@ def generate_mock_data(total_restaurants=30):
                 "carbs": round(dish[4] * random.uniform(0.9, 1.1), 1),
                 "fat": round(dish[5] * random.uniform(0.9, 1.1), 1)
             })
+            item_counter += 1  # 遞增餐點編號
 
     return restaurants, menu_items
 
@@ -99,7 +100,7 @@ def save_to_csv(filename, data, fieldnames):
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(data)
-    print(f"✅ 成功產生: {filename} ({len(data)} 筆)")
+    print(f"成功產生: {filename} ({len(data)} 筆)")
 
 if __name__ == "__main__":
     r_data, m_data = generate_mock_data(30)
