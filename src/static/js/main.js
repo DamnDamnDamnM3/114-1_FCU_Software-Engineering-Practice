@@ -632,7 +632,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (store.menu && store.menu.length > 0) {
             store.menu.forEach((item, index) => {
-                const placeholderImg = index % 3 === 0 ? 'dish-1.jpg' : (index % 3 === 1 ? 'dish-2.jpg' : 'dish-3.jpg');
+                // 使用 picsum 作為菜單 placeholder 圖片
+                const placeholderImg = `https://picsum.photos/seed/dish${store.id}_${index}/200/150`;
                 const menuCard = document.createElement('div');
                 menuCard.classList.add('menu-card');
                 menuCard.innerHTML = `
@@ -746,30 +747,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 類別按鈕點擊事件 (多選切換)
-    categoryButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('selected');
-            console.log(`類別按鈕 ${button.textContent} 狀態切換.`);
-        });
-    });
-
-    // 價格按鈕點擊事件 (單選切換) - 允許都不選
-    priceButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const isSelected = button.classList.contains('selected');
-            priceButtons.forEach(btn => btn.classList.remove('selected'));
-
-            if (!isSelected) {
-                button.classList.add('selected');
-                console.log(`價格按鈕 ${button.textContent} 被選中.`);
-            } else {
-                console.log(`價格按鈕 ${button.textContent} 被取消選中.`);
-            }
-        });
-    });
-
-
     // 搜尋按鈕事件
     const searchButton = document.querySelector('.search-bar-section .btn-primary');
     if (searchButton) {
@@ -824,4 +801,3 @@ function toggleForm(formId) {
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 }
-    </script>

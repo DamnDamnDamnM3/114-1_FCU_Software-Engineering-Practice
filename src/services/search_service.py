@@ -12,7 +12,12 @@ class SearchService:
     
     def __init__(self):
         """初始化搜尋服務"""
-        # 載入範例餐廳資料
+        # 載入餐廳資料（從 CSV）
+        self._restaurants = SampleData.create_sample_restaurants()
+    
+    def reload_data(self):
+        """重新載入資料"""
+        SampleData.clear_cache()
         self._restaurants = SampleData.create_sample_restaurants()
     
     def search_restaurants(self, criteria: FilterCriteria) -> List[Restaurant]:
@@ -37,18 +42,37 @@ class SearchService:
                    any(keyword_lower in item.name.lower() for item in r.menu_items)
             ]
         
-        # 價格篩選
+        # 類別篩選
+        if criteria.categories:
+            results = [
+                r for r in results
+                if r.food_type in criteria.categories
+            ]
+        
+        # 素食篩選
+        if criteria.vegetarian:
+            results = [
+                r for r in results
+                if r.vegetarian_option in ['蛋奶素', '全素']
+            ]
+        
+        # 價格篩選（精確匹配 price_range）
         if criteria.max_price is not None:
-            filtered_results = []
-            for restaurant in results:
-                # 檢查餐廳是否有符合價格的菜單項目
-                has_affordable_item = any(
-                    item.price <= criteria.max_price
-                    for item in restaurant.menu_items
-                )
-                if has_affordable_item:
-                    filtered_results.append(restaurant)
-            results = filtered_results
+            # max_price 對應 price_range: 200->1, 400->2, 600->3
+            if criteria.max_price <= 200:
+                target_range = 1
+            elif criteria.max_price <= 400:
+                target_range = 2
+            elif criteria.max_price <= 600:
+                target_range = 3
+            else:
+                target_range = None  # $$$$ 顯示所有
+            
+            if target_range is not None:
+                results = [
+                    r for r in results
+                    if r.price_range == target_range  # 精確匹配
+                ]
         
         # 評分篩選
         if criteria.min_rating is not None:
@@ -61,8 +85,7 @@ class SearchService:
         if criteria.sort_by == 'rating':
             results.sort(key=lambda r: r.average_rating, reverse=True)
         elif criteria.sort_by == 'price':
-            # 根據最低價格排序
-            results.sort(key=lambda r: min(item.price for item in r.menu_items) if r.menu_items else float('inf'))
+            results.sort(key=lambda r: r.price_range)
         # 'distance' 排序需要位置資訊，暫時不實作
         
         return results

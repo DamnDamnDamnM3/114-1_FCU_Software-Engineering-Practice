@@ -14,7 +14,7 @@
 <body>
     <header class="navbar">
         <div class="logo-container">
-            <img src="logo.png" alt="ByteBite Logo" class="logo-img">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="ByteBite Logo" class="logo-img">
         </div>
         <nav class="nav-links">
             <a href="#" class="nav-item" data-page="search-page" id="nav-search">搜尋</a>
@@ -57,37 +57,21 @@
                     </div>
                 </div>
 
-                <!-- 類別按鈕清單 (已使用 Grid 佈局修正均勻分佈問題) -->
+                <!-- 類別按鈕清單 -->
                 <div class="category-filters">
-                    <button class="filter-btn">日式</button>
                     <button class="filter-btn">台式</button>
-                    <button class="filter-btn">美式</button>
+                    <button class="filter-btn">日式</button>
                     <button class="filter-btn">韓式</button>
                     <button class="filter-btn">義式</button>
-                    <button class="filter-btn">泰式</button>
-                    <button class="filter-btn">港式</button>
-                    <button class="filter-btn">火鍋</button>
-                    <button class="filter-btn">速食</button>
-                    <button class="filter-btn">健康</button>
-                    <button class="filter-btn">飲料</button>
-                    <button class="filter-btn">早餐</button>
-                    <button class="filter-btn">宵夜</button>
-                    <button class="filter-btn">便當</button>
-                    <button class="filter-btn">小吃</button>
-                    <button class="filter-btn">甜點</button>
-                    <button class="filter-btn">麵食</button>
-                    <button class="filter-btn">輕食</button>
-                    <button class="filter-btn">炸雞</button>
-                    <button class="filter-btn">粥</button>
+                    <button class="filter-btn">健康餐</button>
+                    <button class="filter-btn">飲品</button>
                 </div>
 
                 <h3 class="price-title">價格</h3>
                 <div class="price-filters">
-                    <!-- 移除預設選中狀態，讓它可以都不選 -->
                     <button class="filter-btn">$</button>
                     <button class="filter-btn">$$</button>
                     <button class="filter-btn">$$$</button>
-                    <button class="filter-btn">$$$$</button>
                 </div>
             </section>
 
@@ -102,7 +86,7 @@
         <!-- ======================================================= -->
         <section class="page-section" id="store-detail-page">
             <section class="store-hero">
-                <img id="detail-hero-img" src="placeholder-store-4.jpg" alt="店家主視覺">
+                <img id="detail-hero-img" src="https://picsum.photos/seed/default/400/300" alt="店家主視覺">
             </section>
 
             <section class="store-details">
