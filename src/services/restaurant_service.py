@@ -39,6 +39,20 @@ class RestaurantService:
     """餐廳資料庫服務"""
     
     @staticmethod
+    def get_restaurant_list() -> List[Dict[str, Any]]:
+        """取得餐廳列表（僅 ID 和名稱）"""
+        if not driver_available():
+            return []
+        
+        try:
+            query = "SELECT restaurantID, name FROM restaurants ORDER BY name"
+            rows = fetch_all(query)
+            return [{'id': row['restaurantID'], 'name': row['name']} for row in rows]
+        except DatabaseError as e:
+            print(f"[ERROR] 讀取餐廳列表失敗: {e}")
+            return []
+
+    @staticmethod
     def get_all_restaurants() -> List[Restaurant]:
         """取得所有餐廳（含菜單）"""
         if not driver_available():

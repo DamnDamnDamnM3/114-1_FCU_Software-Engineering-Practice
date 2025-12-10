@@ -59,8 +59,9 @@ def _convert_restaurant_to_frontend_format(restaurant, user_id: str = None):
     # 取得餐廳 ID
     rest_num = restaurant.restaurant_id
     
-    # 使用 picsum 作為 placeholder 圖片（基於餐廳 ID 產生不同圖片）
-    placeholder_img = f"https://picsum.photos/seed/store{rest_num}/400/300"
+    # 使用本地圖片（基於餐廳 ID 循環使用 30 張圖片）
+    img_id = (rest_num - 1) % 30 + 1
+    placeholder_img = f"/static/images/stores/store_{img_id}.jpg"
     
     return {
         "id": rest_num,
@@ -276,6 +277,60 @@ def manage_favorites():
         }), 500
 
 
+@frontend_bp.route('/api/restaurants/list', methods=['GET'])
+def get_restaurant_list():
+    """取得餐廳列表（下拉選單用）"""
+    try:
+        restaurants = restaurant_service.get_restaurant_list()
+        return jsonify({
+            "success": True,
+            "data": restaurants
+        }), 200
+    except Exception as e:
+        ERROR_PRINT(f"[ERROR] 取得餐廳列表失敗: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "無法取得餐廳列表"
+        }), 500
+
+
+@frontend_bp.route('/api/restaurants/<int:restaurant_id>/menu', methods=['GET'])
+def get_restaurant_menu(restaurant_id):
+    """取得特定餐廳的菜單"""
+    try:
+        restaurant = restaurant_service.get_restaurant_by_id(restaurant_id)
+        if not restaurant:
+            return jsonify({
+                "success": False,
+                "error": "餐廳不存在"
+            }), 404
+            
+        menu_items = []
+        for item in restaurant.menu_items:
+            menu_items.append({
+                "id": item.item_id,
+                "name": item.name,
+                "price": item.price,
+                "calories": item.calories,
+                "protein": item.protein,
+                "carbs": item.carbs,
+                "fat": item.fat,
+                "sugar": 0, # 資料庫目前沒有糖和鈉，暫時設為 0
+                "sodium": 0
+            })
+            
+        return jsonify({
+            "success": True,
+            "data": menu_items
+        }), 200
+    except Exception as e:
+        ERROR_PRINT(f"[ERROR] 取得菜單失敗: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": "無法取得菜單"
+        }), 500
+
+
 @frontend_bp.route('/api/diet', methods=['GET', 'POST', 'DELETE'])
 def manage_diet():
     """
@@ -301,16 +356,31 @@ def manage_diet():
     try:
         if request.method == 'GET':
             user_id = request.args.get('user_id', type=int) or TEMP_USER_ID
-            today_only = request.args.get('today', 'true').lower() == 'true'
+            date_str = request.args.get('date')
             
-            if today_only:
-                logs = diet_service.get_today_diet_logs(user_id)
+            if date_str:
+                logs = diet_service.get_date_diet_logs(user_id, date_str)
             else:
-                logs = diet_service.get_user_diet_logs(user_id)
+                today_only = request.args.get('today', 'true').lower() == 'true'
+                if today_only:
+                    logs = diet_service.get_today_diet_logs(user_id)
+                else:
+                    logs = diet_service.get_user_diet_logs(user_id)
             
             # 轉換為前端格式
             logs_data = []
             for log in logs:
+                # 根據時間判斷餐別
+                meal_type = 'other'
+                if log.timestamp:
+                    hour = log.timestamp.hour
+                    if 5 <= hour < 11:
+                        meal_type = 'breakfast'
+                    elif 11 <= hour < 17:
+                        meal_type = 'lunch'
+                    elif 17 <= hour < 22:
+                        meal_type = 'dinner'
+                
                 logs_data.append({
                     "id": log.log_id,
                     "item_id": log.item_id,
@@ -321,7 +391,8 @@ def manage_diet():
                     "carbs": round(log.carbs * log.portion_size, 1),
                     "fat": round(log.fat * log.portion_size, 1),
                     "portion_size": log.portion_size,
-                    "timestamp": log.timestamp.isoformat() if log.timestamp else None
+                    "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+                    "meal": meal_type
                 })
             
             # 同時返回今日營養攝取總計
@@ -335,9 +406,45 @@ def manage_diet():
         
         elif request.method == 'POST':
             data = request.get_json() or {}
-            user_id = data.get('user_id') or TEMP_USER_ID
+            
+            # 處理 user_id，確保為整數
+            user_id = data.get('user_id')
+            if str(user_id) == 'user_001':
+                user_id = TEMP_USER_ID
+            else:
+                try:
+                    user_id = int(user_id)
+                except (ValueError, TypeError):
+                    user_id = TEMP_USER_ID
+            
             item_id = data.get('item_id')
             portion_size = data.get('portion_size', 1.0)
+            date_str = data.get('date') # 前端傳來的日期字串
+            meal_type = data.get('meal') # 前端傳來的餐別
+
+            # 根據餐別設定時間
+            timestamp = None
+            if date_str:
+                # 如果 date_str 已經包含時間 (T)，則取日期部分
+                if 'T' in date_str:
+                    date_part = date_str.split('T')[0]
+                else:
+                    date_part = date_str
+
+                if meal_type == 'breakfast':
+                    timestamp = f"{date_part} 08:00:00"
+                elif meal_type == 'lunch':
+                    timestamp = f"{date_part} 12:00:00"
+                elif meal_type == 'dinner':
+                    timestamp = f"{date_part} 18:00:00"
+                else:
+                    # other 或未指定
+                    from datetime import datetime
+                    now = datetime.now()
+                    if now.strftime('%Y-%m-%d') == date_part:
+                        timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        timestamp = f"{date_part} 20:00:00"
             
             if not item_id:
                 return jsonify({
@@ -347,9 +454,10 @@ def manage_diet():
             
             # 新增飲食記錄
             log_id = diet_service.add_diet_log(
-                user_id=int(user_id),
-                item_id=int(item_id),
-                portion_size=float(portion_size)
+                user_id=user_id,
+                item_id=item_id,
+                portion_size=portion_size,
+                timestamp=timestamp
             )
             
             if log_id:

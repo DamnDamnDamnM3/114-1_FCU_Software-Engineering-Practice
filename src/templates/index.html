@@ -35,7 +35,6 @@
                 <div class="search-input-group">
                     <i class="fa-solid fa-search"></i>
                     <input type="text" placeholder="Search">
-                    <i class="fa-solid fa-microphone"></i>
                 </div>
                 <button class="btn btn-primary">查詢</button>
             </div>
@@ -86,7 +85,7 @@
         <!-- ======================================================= -->
         <section class="page-section" id="store-detail-page">
             <section class="store-hero">
-                <img id="detail-hero-img" src="https://picsum.photos/seed/default/400/300" alt="店家主視覺">
+                <img id="detail-hero-img" src="{{ url_for('static', filename='images/stores/default_store.jpg') }}" alt="店家主視覺">
             </section>
 
             <section class="store-details">
@@ -192,9 +191,10 @@
                         <input type="number" id="food-sodium" placeholder="">
                     </div>
                     <div class="action-buttons">
-                        <button class="btn btn-secondary"><i class="fa-solid fa-camera"></i> 上傳圖片</button>
+                        <input type="file" id="food-image-input" accept="image/*" style="display: none;">
+                        <button class="btn btn-secondary" id="upload-image-btn"><i class="fa-solid fa-camera"></i> <span id="upload-btn-text">上傳圖片</span></button>
                         <div class="spacer"></div>
-                        <button class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> 刪除</button>
+                        <button class="btn btn-danger" id="delete-diet-btn"><i class="fa-solid fa-trash-can"></i> 刪除</button>
                         <button class="btn btn-primary" id="save-diet-btn"><i class="fa-solid fa-floppy-disk"></i>
                             儲存</button>
                     </div>
@@ -236,6 +236,11 @@
                                 <p>毫克</p>
                             </div>
                         </div>
+                    </section>
+                    
+                    <!-- 今日所有飲食細節列表 -->
+                    <section class="food-entry-list" id="total-food-list">
+                        <!-- 所有飲食條目將由 JS 填充 -->
                     </section>
                 </div>
 

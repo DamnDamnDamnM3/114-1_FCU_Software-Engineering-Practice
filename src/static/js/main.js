@@ -2,7 +2,7 @@
 const API_BASE = '/api';
 
 // 使用者 ID（實際應用中應該從 session 或登入狀態取得）
-const USER_ID = 'user_001';
+const USER_ID = 1;
 
 // 店家資料（從 API 載入）
 let storeData = [];
@@ -43,16 +43,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const mealSummaryValues = document.getElementById('meal-summary-values');
     const mealFoodList = document.getElementById('meal-food-list');
     const totalSummaryValues = document.getElementById('total-summary-values');
+    const totalFoodList = document.getElementById('total-food-list');
     const saveDietBtn = document.getElementById('save-diet-btn');
+    const deleteDietBtn = document.getElementById('delete-diet-btn');
 
     // 輸入框元素
-    const inputName = document.getElementById('food-name');
+    const foodNameInput = document.getElementById('food-name');
+    const foodImageInput = document.getElementById('food-image-input');
+    const uploadImageBtn = document.getElementById('upload-image-btn');
+    const uploadBtnText = document.getElementById('upload-btn-text');
+    // const portionSizeInput = document.getElementById('portion-size'); // Removed
     const inputCals = document.getElementById('food-cals');
     const inputCarbs = document.getElementById('food-carbs');
     const inputProtein = document.getElementById('food-protein');
     const inputFat = document.getElementById('food-fat');
     const inputSugar = document.getElementById('food-sugar');
     const inputSodium = document.getElementById('food-sodium');
+
+    // 上傳圖片按鈕邏輯
+    if (uploadImageBtn) {
+        uploadImageBtn.addEventListener('click', () => {
+            foodImageInput.click();
+        });
+    }
+
+    if (foodImageInput) {
+        foodImageInput.addEventListener('change', () => {
+            if (foodImageInput.files && foodImageInput.files[0]) {
+                uploadBtnText.textContent = foodImageInput.files[0].name;
+            } else {
+                uploadBtnText.textContent = '上傳圖片';
+            }
+        });
+    }
 
 
     // --- 輔助函式定義 ---
@@ -178,47 +201,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchDietLogs(date = null, meal = null) {
-        try {
-            const params = new URLSearchParams();
-            params.append('user_id', USER_ID);
-            if (date) params.append('date', date);
-            if (meal) params.append('meal', meal);
+    // --- LocalStorage 存取函式 ---
 
-            const response = await fetch(`${API_BASE}/diet?${params.toString()}`);
-            const result = await response.json();
+    function getLocalDietLogs() {
+        const logs = localStorage.getItem('diet_logs');
+        return logs ? JSON.parse(logs) : [];
+    }
 
-            if (result.success) {
-                return result.data;
-            } else {
-                console.error('取得飲食記錄失敗:', result.error);
-                return [];
+    function saveLocalDietLogs(logs) {
+        localStorage.setItem('diet_logs', JSON.stringify(logs));
+    }
+
+    // 暴露給全域使用，以便 onclick 可以呼叫
+    window.deleteLocalDietLog = function(id) {
+        if (!confirm('確定要刪除這筆紀錄嗎？')) return;
+        
+        let logs = getLocalDietLogs();
+        logs = logs.filter(log => log.id !== id);
+        saveLocalDietLogs(logs);
+        
+        // 重新載入
+        loadDietData();
+    }
+
+    // 將圖片轉為 Base64
+    function convertImageToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function loadDietData() {
+        const selectedDateElement = document.querySelector('.cal-day.selected');
+        let date = null;
+        if (selectedDateElement) {
+            const dateStr = selectedDateElement.getAttribute('data-date');
+            if (dateStr) {
+                const dateObj = new Date(dateStr);
+                date = dateObj.toISOString().split('T')[0];
             }
-        } catch (error) {
-            console.error('API 錯誤:', error);
-            return [];
+        }
+        if (!date) {
+            date = new Date().toISOString().split('T')[0];
+        }
+
+        // 從 LocalStorage 讀取並篩選日期
+        const allLogs = getLocalDietLogs();
+        dailyDietData = allLogs.filter(log => log.date === date);
+        
+        renderTotalSummary(dailyDietData);
+        
+        // 如果正在查看特定餐次，也要更新該餐次的顯示
+        const selectedBtn = document.querySelector('.meal-card-btn.selected');
+        if (selectedBtn) {
+            const mealType = selectedBtn.getAttribute('data-meal');
+            renderMealDetails(mealType, dailyDietData);
         }
     }
 
-    async function saveDietLog(dietData) {
-        try {
-            const response = await fetch(`${API_BASE}/diet`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: USER_ID,
-                    ...dietData
-                })
-            });
-            const result = await response.json();
-            return result.success ? result.data : null;
-        } catch (error) {
-            console.error('API 錯誤:', error);
-            return null;
-        }
-    }
+    // 移除舊的 fetchDietLogs 和 saveDietLog API 呼叫
+    // async function fetchDietLogs... (已移除)
+    // async function saveDietLog... (已移除)
 
     function resetAllFilters() {
         categoryButtons.forEach(button => {
@@ -227,6 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
         priceButtons.forEach(button => {
             button.classList.remove('selected');
         });
+        if (vegetarianToggle) {
+            vegetarianToggle.checked = false;
+        }
         console.log("分類及價格篩選條件已重置。");
         loadStores();
     }
@@ -270,6 +319,35 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="summary-value"><p>${total.sodium}</p><p>毫克</p></div>
         `;
 
+        if (totalFoodList) {
+            if (data.length === 0) {
+                totalFoodList.innerHTML = '<p style="text-align: center; color: #999;">今日尚未新增資料</p>';
+            } else {
+                totalFoodList.innerHTML = data.map(item => `
+                    <div class="food-entry">
+                        <div class="entry-title">
+                            ${item.name} 
+                            <span style="font-size: 0.8em; color: #666; margin-left: 10px;">
+                                (${getMealName(item.meal)})
+                            </span>
+                            <button onclick="deleteLocalDietLog(${item.id})" style="float: right; background: none; border: none; color: #ff4d4f; cursor: pointer;">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                        ${item.image ? `<img src="${item.image}" style="max-width: 100px; max-height: 100px; margin: 5px 0; border-radius: 5px;">` : ''}
+                        <div class="entry-nutrients">
+                            <div class="entry-nutrient"><p>${item.cals}</p><p>大卡</p></div>
+                            <div class="entry-nutrient"><p>${item.carbs}</p><p>公克</p></div>
+                            <div class="entry-nutrient"><p>${item.protein}</p><p>公克</p></div>
+                            <div class="entry-nutrient"><p>${item.fat}</p><p>公克</p></div>
+                            <div class="entry-nutrient"><p>${item.sugar}</p><p>公克</p></div>
+                            <div class="entry-nutrient"><p>${item.sodium}</p><p>毫克</p></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
         mealButtons.forEach(btn => {
             const mealType = btn.getAttribute('data-meal');
             const mealCals = data
@@ -307,7 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             mealFoodList.innerHTML = mealItems.map(item => `
                 <div class="food-entry">
-                    <div class="entry-title">${item.name}</div>
+                    <div class="entry-title">
+                        ${item.name}
+                        <button onclick="deleteLocalDietLog(${item.id})" style="float: right; background: none; border: none; color: #ff4d4f; cursor: pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    ${item.image ? `<img src="${item.image}" style="max-width: 100px; max-height: 100px; margin: 5px 0; border-radius: 5px;">` : ''}
                     <div class="entry-nutrients">
                         <div class="entry-nutrient"><p>${item.cals}</p><p>大卡</p></div>
                         <div class="entry-nutrient"><p>${item.carbs}</p><p>公克</p></div>
@@ -339,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTotalSummary(dailyDietData); // 確保每次重置都更新總計
     }
 
-    // --- 儲存功能 ---
+    // --- 儲存功能 (LocalStorage) ---
     saveDietBtn.addEventListener('click', async () => {
         // 找出當前選中的餐次
         const selectedBtn = document.querySelector('.meal-card-btn.selected');
@@ -350,17 +434,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const mealType = selectedBtn.getAttribute('data-meal');
 
         // 獲取輸入值
-        const name = inputName.value.trim();
-        const cals = parseInt(inputCals.value) || 0;
-        const carbs = parseInt(inputCarbs.value) || 0;
-        const protein = parseInt(inputProtein.value) || 0;
-        const fat = parseInt(inputFat.value) || 0;
-        const sugar = parseInt(inputSugar.value) || 0;
-        const sodium = parseInt(inputSodium.value) || 0;
-
-        if (!name) {
-            alert('請輸入食物名稱！');
+        const foodName = foodNameInput.value.trim();
+        const portionSize = 1.0; // Default to 1.0 as input is removed
+        
+        if (!foodName) {
+            alert('請輸入餐點名稱！');
             return;
+        }
+
+        // 處理圖片
+        let imageBase64 = null;
+        if (foodImageInput.files && foodImageInput.files[0]) {
+            try {
+                imageBase64 = await convertImageToBase64(foodImageInput.files[0]);
+            } catch (e) {
+                console.error("圖片轉換失敗", e);
+                alert("圖片上傳失敗");
+                return;
+            }
         }
 
         // 取得選中的日期
@@ -377,41 +468,60 @@ document.addEventListener('DOMContentLoaded', () => {
             date = new Date().toISOString().split('T')[0];
         }
 
-        // 儲存到後端
-        const savedItem = await saveDietLog({
+        // 建構新紀錄物件
+        const newLog = {
+            id: Date.now(), // 使用 timestamp 當作 ID
+            date: date,
             meal: mealType,
-            name: name,
-            cals: cals,
-            carbs: carbs,
-            protein: protein,
-            fat: fat,
-            sugar: sugar,
-            sodium: sodium,
-            date: date
-        });
+            name: foodName,
+            portion_size: portionSize,
+            cals: parseFloat(inputCals.value) || 0,
+            carbs: parseFloat(inputCarbs.value) || 0,
+            protein: parseFloat(inputProtein.value) || 0,
+            fat: parseFloat(inputFat.value) || 0,
+            sugar: parseFloat(inputSugar.value) || 0,
+            sodium: parseFloat(inputSodium.value) || 0,
+            image: imageBase64
+        };
 
-        if (savedItem) {
-            // 重新載入飲食數據
-            await loadDietData();
+        // 儲存到 LocalStorage
+        const logs = getLocalDietLogs();
+        logs.push(newLog);
+        saveLocalDietLogs(logs);
 
-            // 清空輸入框
-            inputName.value = '';
+        // 重新載入飲食數據
+        await loadDietData();
+
+        // 重置輸入框
+        foodNameInput.value = '';
+        foodImageInput.value = ''; // 清除檔案選擇
+        if (uploadBtnText) uploadBtnText.textContent = '上傳圖片';
+        // portionSizeInput.value = '1.0';
+        inputCals.value = '';
+        inputCarbs.value = '';
+        inputProtein.value = '';
+        inputFat.value = '';
+        inputSugar.value = '';
+        inputSodium.value = '';
+
+        console.log('已儲存至 LocalStorage:', newLog);
+    });
+
+    // --- 重置/刪除功能 ---
+    if (deleteDietBtn) {
+        deleteDietBtn.addEventListener('click', () => {
+            foodNameInput.value = '';
+            foodImageInput.value = '';
+            if (uploadBtnText) uploadBtnText.textContent = '上傳圖片';
+            // portionSizeInput.value = '1.0';
             inputCals.value = '';
             inputCarbs.value = '';
             inputProtein.value = '';
             inputFat.value = '';
             inputSugar.value = '';
             inputSodium.value = '';
-
-            // 更新畫面
-            renderTotalSummary(dailyDietData);
-            renderMealDetails(mealType, dailyDietData);
-
-            console.log('已儲存:', savedItem);
-        } else {
-            alert('儲存失敗，請稍後再試');
-        }
-    });
+        });
+    }
 
     async function loadStoreDetail(storeId) {
         const store = await fetchStoreDetail(storeId);
@@ -428,23 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFavorites(favoriteStores);
     }
 
-    async function loadDietData() {
-        const selectedDateElement = document.querySelector('.cal-day.selected');
-        let date = null;
-        if (selectedDateElement) {
-            const dateStr = selectedDateElement.getAttribute('data-date');
-            if (dateStr) {
-                const dateObj = new Date(dateStr);
-                date = dateObj.toISOString().split('T')[0];
-            }
-        }
-        if (!date) {
-            date = new Date().toISOString().split('T')[0];
-        }
 
-        dailyDietData = await fetchDietLogs(date);
-        renderTotalSummary(dailyDietData);
-    }
 
 
     async function handleDayClick() {
@@ -486,7 +580,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 date = new Date().toISOString().split('T')[0];
             }
 
-            const mealData = await fetchDietLogs(date, mealType);
+            const allLogs = getLocalDietLogs();
+            const mealData = allLogs.filter(log => log.date === date && log.meal === mealType);
             renderMealDetails(mealType, mealData);
             console.log(`正在查看 ${mealType} 詳情。`);
         } else {
@@ -570,15 +665,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStoreList(stores) {
         // Ensure storeListContainer exists before trying to access innerHTML
-        if (!storeListContainer) {
+        const container = document.getElementById('store-list-container') || storeListContainer;
+        if (!container) {
             console.error("Store list container not found!");
             return;
         }
 
-        storeListContainer.innerHTML = '';
+        container.innerHTML = '';
 
-        if (stores.length === 0) {
-            storeListContainer.innerHTML = '<p style="text-align: center; color: #666; padding: 40px 0;">沒有找到符合條件的餐廳。</p>';
+        if (!stores || stores.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px 0;">沒有找到符合條件的餐廳。</p>';
             return;
         }
 
@@ -599,10 +695,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="price-range">${store.priceRange || '$ 1 ~ 200'}</span>
                 </div>
             `;
-            storeListContainer.appendChild(card);
+            container.appendChild(card);
         });
 
-        document.querySelectorAll('.store-link').forEach(link => {
+        container.querySelectorAll('.store-link').forEach(link => {
             link.addEventListener('click', handleStoreLinkClick);
         });
     }
@@ -632,8 +728,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (store.menu && store.menu.length > 0) {
             store.menu.forEach((item, index) => {
-                // 使用 picsum 作為菜單 placeholder 圖片
-                const placeholderImg = `https://picsum.photos/seed/dish${store.id}_${index}/200/150`;
+                // 使用本地圖片（循環使用 20 張）
+                const imgIndex = (index % 20) + 1;
+                const placeholderImg = `/static/images/dishes/dish_${imgIndex}.jpg`;
                 const menuCard = document.createElement('div');
                 menuCard.classList.add('menu-card');
                 menuCard.innerHTML = `
@@ -784,6 +881,13 @@ document.addEventListener('DOMContentLoaded', () => {
             loadStores();
         });
     });
+
+    // 素食開關變更時重新載入
+    if (vegetarianToggle) {
+        vegetarianToggle.addEventListener('change', () => {
+            loadStores();
+        });
+    }
 
     // --- 啟動初始化 ---
 

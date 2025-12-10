@@ -31,7 +31,7 @@ class DietService:
     """飲食記錄服務"""
     
     @staticmethod
-    def add_diet_log(user_id: int, item_id: int, portion_size: float = 1.0) -> Optional[int]:
+    def add_diet_log(user_id: int, item_id: int, portion_size: float = 1.0, timestamp: Optional[str] = None) -> Optional[int]:
         """
         新增飲食記錄
         
@@ -39,6 +39,7 @@ class DietService:
             user_id: 使用者 ID
             item_id: 菜單項目 ID
             portion_size: 份量倍數（預設 1.0）
+            timestamp: 進食時間 (ISO 格式字串)，若為 None 則使用當前時間
             
         Returns:
             新記錄的 ID，失敗則返回 None
@@ -48,11 +49,18 @@ class DietService:
             return None
         
         try:
-            query = """
-                INSERT INTO diet_logs (userID, itemID, timestamp, portionSize)
-                VALUES (?, ?, NOW(), ?)
-            """
-            log_id = execute_returning_id(query, (user_id, item_id, portion_size))
+            if timestamp:
+                query = """
+                    INSERT INTO diet_logs (userID, itemID, timestamp, portionSize)
+                    VALUES (?, ?, ?, ?)
+                """
+                log_id = execute_returning_id(query, (user_id, item_id, timestamp, portion_size))
+            else:
+                query = """
+                    INSERT INTO diet_logs (userID, itemID, timestamp, portionSize)
+                    VALUES (?, ?, NOW(), ?)
+                """
+                log_id = execute_returning_id(query, (user_id, item_id, portion_size))
             return log_id
             
         except DatabaseError as e:
@@ -87,6 +95,57 @@ class DietService:
                 LIMIT ?
             """
             rows = fetch_all(query, (user_id, limit))
+            
+            logs = []
+            for row in rows:
+                log = DietLog(
+                    log_id=row['logID'],
+                    user_id=row['userID'],
+                    item_id=row['itemID'],
+                    timestamp=row['timestamp'],
+                    portion_size=float(row['portionSize'] or 1.0),
+                    item_name=row['itemName'] or '',
+                    restaurant_name=row['restaurantName'] or '',
+                    calories=int(row['calories'] or 0),
+                    protein=float(row['protein'] or 0),
+                    carbs=float(row['carbs'] or 0),
+                    fat=float(row['fat'] or 0)
+                )
+                logs.append(log)
+            
+            return logs
+            
+        except DatabaseError as e:
+            print(f"[ERROR] 讀取飲食記錄失敗: {e}")
+            return []
+
+    @staticmethod
+    def get_date_diet_logs(user_id: int, date_str: str) -> List[DietLog]:
+        """
+        取得使用者指定日期的飲食記錄
+        
+        Args:
+            user_id: 使用者 ID
+            date_str: 日期字串 (YYYY-MM-DD)
+            
+        Returns:
+            該日飲食記錄列表
+        """
+        if not driver_available():
+            return []
+        
+        try:
+            query = """
+                SELECT d.logID, d.userID, d.itemID, d.timestamp, d.portionSize,
+                       m.name as itemName, r.name as restaurantName,
+                       m.calories, m.protein, m.carbs, m.fat
+                FROM diet_logs d
+                JOIN menu_items m ON d.itemID = m.itemID
+                JOIN restaurants r ON m.restaurantID = r.restaurantID
+                WHERE d.userID = ? AND DATE(d.timestamp) = ?
+                ORDER BY d.timestamp DESC
+            """
+            rows = fetch_all(query, (user_id, date_str))
             
             logs = []
             for row in rows:
