@@ -9,11 +9,5 @@ from . import home_bp
 @home_bp.route('/')
 def index():
     """首頁"""
-    return render_template('home/index.html')
-
-
-@home_bp.route('/about')
-def about():
-    """關於頁面"""
-    return render_template('home/about.html')
+    return render_template('index.html')
 

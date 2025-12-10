@@ -92,7 +92,7 @@ def _convert_restaurant_to_frontend_format(restaurant, user_id: str = None):
 @frontend_bp.route('/app')
 def index():
     """前端應用主頁"""
-    return render_template('frontend/index.html')
+    return render_template('index.html')
 
 
 @frontend_bp.route('/api/stores', methods=['GET'])

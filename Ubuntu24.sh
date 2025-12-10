@@ -13,6 +13,7 @@ clear
 
 echo "Installing MariaDB..."
 sudo apt install -y mariadb-server
+sudo apt install -y libmariadb-dev libmariadb-dev-compat
 echo "================================================"
 echo "Done"
 echo "================================================"
