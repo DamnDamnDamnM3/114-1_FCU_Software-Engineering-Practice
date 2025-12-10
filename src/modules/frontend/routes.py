@@ -86,7 +86,7 @@ def _convert_restaurant_to_frontend_format(restaurant, user_id: str = None):
                 "carbs": getattr(item, 'carbs', 0),
                 "fat": getattr(item, 'fat', 0)
             }
-            for item in restaurant.menu_items[:4]  # 取前四個菜單項目
+            for item in restaurant.menu_items  # 取所有菜單項目
         ],
         "is_favorited": is_favorited
     }

@@ -14,6 +14,8 @@ let dailyDietData = [];
 let favorites = [];
 let currentStoreId = null;
 let currentRestaurantId = null;
+let currentStore = null; // 新增：儲存當前店家完整資訊
+let allFavoriteStores = []; // 儲存所有收藏店家，供篩選使用
 
 // 月曆狀態
 let currentMonth = new Date();
@@ -210,6 +212,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveLocalDietLogs(logs) {
         localStorage.setItem('diet_logs', JSON.stringify(logs));
+    }
+
+    // --- 收藏 LocalStorage 存取函式 ---
+    function getLocalFavorites() {
+        const favs = localStorage.getItem('user_favorites');
+        return favs ? JSON.parse(favs) : [];
+    }
+
+    function saveLocalFavorites(favs) {
+        localStorage.setItem('user_favorites', JSON.stringify(favs));
     }
 
     // 暴露給全域使用，以便 onclick 可以呼叫
@@ -526,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadStoreDetail(storeId) {
         const store = await fetchStoreDetail(storeId);
         if (store) {
+            currentStore = store; // 儲存完整資訊
             currentStoreId = store.id;
             currentRestaurantId = store.restaurant_id;
             renderStoreDetail(store);
@@ -533,9 +546,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadFavorites() {
-        const favoriteStores = await fetchFavorites();
-        favorites = favoriteStores.map(s => s.restaurant_id);
-        renderFavorites(favoriteStores);
+        // 改為從 LocalStorage 讀取
+        allFavoriteStores = getLocalFavorites();
+        favorites = allFavoriteStores.map(s => s.restaurant_id || s.id);
+        
+        updateFavoriteFilterOptions(allFavoriteStores);
+        renderFavorites(allFavoriteStores);
+    }
+
+    function updateFavoriteFilterOptions(stores) {
+        const collectionSelect = document.getElementById('collection-select');
+        if (!collectionSelect) return;
+
+        // 取得所有不重複的分類
+        const categories = [...new Set(stores.map(store => store.foodType).filter(Boolean))];
+
+        // 保留 "所有" 選項，並加入動態分類
+        collectionSelect.innerHTML = '<option value="all">所有</option>';
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            collectionSelect.appendChild(option);
+        });
+    }
+
+    function filterFavorites() {
+        const collectionSelect = document.getElementById('collection-select');
+        const searchInput = document.querySelector('.favorite-filter .large-filter-input');
+        
+        const category = collectionSelect ? collectionSelect.value : 'all';
+        const keyword = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        let filtered = allFavoriteStores;
+
+        if (category !== 'all') {
+            filtered = filtered.filter(store => store.foodType === category);
+        }
+
+        if (keyword) {
+            filtered = filtered.filter(store => store.name.toLowerCase().includes(keyword));
+        }
+
+        renderFavorites(filtered);
     }
 
 
@@ -813,33 +866,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 收藏頁面篩選事件
+    const collectionSelect = document.getElementById('collection-select');
+    if (collectionSelect) {
+        collectionSelect.addEventListener('change', filterFavorites);
+    }
+
+    const favSearchInput = document.querySelector('.favorite-filter .large-filter-input');
+    if (favSearchInput) {
+        favSearchInput.addEventListener('input', filterFavorites);
+    }
+
     // 追蹤圖標點擊事件 (愛心切換 & 不跳轉)
     if (followIcon) {
         followIcon.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            if (!currentRestaurantId) return; // 確保有餐廳 ID
+            if (!currentStore) return; // 確保有店家資訊
 
             const isFavorited = followIcon.classList.contains('fa-solid');
+            let localFavs = getLocalFavorites();
+            const storeId = currentStore.restaurant_id || currentStore.id;
 
             if (!isFavorited) {
-                // 加入收藏
-                const success = await addFavorite(currentRestaurantId);
-                if (success) {
-                    favorites.push(currentRestaurantId);
-                    followIcon.classList.remove('fa-regular');
-                    followIcon.classList.add('fa-solid', 'followed');
-                    console.log(`店家 ${currentRestaurantId} 已收藏。`);
+                // 加入收藏 (LocalStorage)
+                if (!localFavs.some(s => (s.restaurant_id || s.id) === storeId)) {
+                    localFavs.push(currentStore);
+                    saveLocalFavorites(localFavs);
                 }
+                
+                favorites.push(storeId);
+                followIcon.classList.remove('fa-regular');
+                followIcon.classList.add('fa-solid', 'followed');
+                console.log(`店家 ${storeId} 已收藏 (Local)。`);
             } else {
-                // 移除收藏
-                const success = await removeFavorite(currentRestaurantId);
-                if (success) {
-                    favorites = favorites.filter(id => id !== currentRestaurantId);
-                    followIcon.classList.remove('fa-solid', 'followed');
-                    followIcon.classList.add('fa-regular');
-                    console.log(`店家 ${currentRestaurantId} 已取消收藏。`);
-                }
+                // 移除收藏 (LocalStorage)
+                localFavs = localFavs.filter(s => (s.restaurant_id || s.id) !== storeId);
+                saveLocalFavorites(localFavs);
+
+                favorites = favorites.filter(id => id !== storeId);
+                followIcon.classList.remove('fa-solid', 'followed');
+                followIcon.classList.add('fa-regular');
+                console.log(`店家 ${storeId} 已取消收藏 (Local)。`);
             }
         });
     }
