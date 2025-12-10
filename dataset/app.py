@@ -44,22 +44,19 @@ def generate_mock_data(total_restaurants=30):
     menu_items = []
     
     types_list = list(STORE_NAMES.keys())
-    item_counter = 1  # 餐點編號從1開始
     
     for i in range(total_restaurants):
         f_type = types_list[i % len(types_list)]
         base_name = random.choice(STORE_NAMES[f_type])
         r_name = f"{base_name}" if i < 15 else f"{base_name} ({i+1}號店)"
-        r_id = str(i + 1)  # 餐廳編號從1開始
         
         if f_type in ["健康餐", "義式", "飲品"]:
             veg_opt = random.choice(["蛋奶素", "全素"])
         else:
             veg_opt = "葷食"
             
-        # 餐廳物件
+        # 餐廳物件（不包含 restaurantID，由資料庫自動產生）
         restaurants.append({
-            "restaurantID": r_id,
             "name": r_name,
             "address": f"台中市西屯區{random.choice(ADDRESSES)}{random.randint(1, 300)}號",
             "averageRating": round(random.uniform(3.5, 4.9), 1),
@@ -76,9 +73,9 @@ def generate_mock_data(total_restaurants=30):
             price_var = dish[1] + random.choice([-5, 0, 5, 10])
             cal_var = int(dish[2] * random.uniform(0.9, 1.1))
             
+            # restaurantID 使用餐廳在列表中的索引+1（假設按順序插入，資料庫會自動分配 ID）
             menu_items.append({
-                "itemID": str(item_counter),  # 餐點編號從1開始
-                "restaurantID": r_id,
+                "restaurantID": i + 1,  # 使用餐廳索引+1作為外鍵（假設按順序插入）
                 "name": dish[0],
                 "description": f"{r_name} 特製的{dish[0]}",
                 "price": float(price_var),
@@ -87,7 +84,6 @@ def generate_mock_data(total_restaurants=30):
                 "carbs": round(dish[4] * random.uniform(0.9, 1.1), 1),
                 "fat": round(dish[5] * random.uniform(0.9, 1.1), 1)
             })
-            item_counter += 1  # 遞增餐點編號
 
     return restaurants, menu_items
 
@@ -105,9 +101,9 @@ def save_to_csv(filename, data, fieldnames):
 if __name__ == "__main__":
     r_data, m_data = generate_mock_data(30)
     
-    # 定義欄位順序
-    r_cols = ["restaurantID", "name", "address", "averageRating", "priceRange", "foodType", "vegetarianOption"]
-    m_cols = ["itemID", "restaurantID", "name", "description", "price", "calories", "protein", "carbs", "fat"]
+    # 定義欄位順序（不包含自動產生的 ID 欄位）
+    r_cols = ["name", "address", "averageRating", "priceRange", "foodType", "vegetarianOption"]
+    m_cols = ["restaurantID", "name", "description", "price", "calories", "protein", "carbs", "fat"]
     
     save_to_csv("restaurants.csv", r_data, r_cols)
     save_to_csv("menu_items.csv", m_data, m_cols)
