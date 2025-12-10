@@ -1,4 +1,4 @@
 # Flask to build the web application
-Flask = 3.1.2
-mariadb = 1.1.14
-python-dotenv = 1.2.1
+Flask == 3.1.2
+mariadb == 1.1.14
+python-dotenv == 1.2.1
