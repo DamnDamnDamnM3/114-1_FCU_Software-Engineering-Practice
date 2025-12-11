@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ByteBite - UI 整合展示</title>
+    <!-- 引入 Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- 引入自訂 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="ByteBite Logo" class="logo-img">
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="nav-item" data-page="search-page" id="nav-search">搜尋</a>
+            <a href="#" class="nav-item" data-page="diet-page" id="nav-diet">我的飲食</a>
+            <a href="#" class="nav-item" data-page="favorite-page" id="nav-favorite">收藏</a>
+        </nav>
+        <div class="user-icon" id="user-menu-btn" style="cursor: pointer;">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- ======================================================= -->
+        <!-- 1. 搜尋頁面 (Frame 1) -->
+        <!-- ======================================================= -->
+        <section class="page-section active" id="search-page">
+            <div class="search-bar-section">
+                <div class="search-input-group">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+                <button class="btn btn-primary">查詢</button>
+            </div>
+
+            <section class="filter-section">
+                <div class="filter-header">
+                    <h3>篩選</h3>
+                    <!-- 素食開關與重置按鈕容器 -->
+                    <div class="filter-controls">
+                        <!-- 重置按鈕已移到素食開關的左邊 -->
+                        <button id="reset-filters">重置</button>
+                        <div class="vegetarian-toggle">
+                            <span>素食</span>
+                            <label class="switch">
+                                <input type="checkbox" id="vegetarian-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 類別按鈕清單 -->
+                <div class="category-filters">
+                    <button class="filter-btn">台式</button>
+                    <button class="filter-btn">日式</button>
+                    <button class="filter-btn">韓式</button>
+                    <button class="filter-btn">義式</button>
+                    <button class="filter-btn">健康餐</button>
+                    <button class="filter-btn">飲品</button>
+                </div>
+
+                <h3 class="price-title">價格</h3>
+                <div class="price-filters">
+                    <button class="filter-btn">$</button>
+                    <button class="filter-btn">$$</button>
+                    <button class="filter-btn">$$$</button>
+                </div>
+            </section>
+
+            <!-- 店家列表容器 (將由 JS 填充) -->
+            <section class="store-list" id="store-list-container">
+                <!-- JS 將在此處插入動態生成的店家卡片 -->
+            </section>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- 2. 店家詳情頁 (Frame 2) - 內容將由 JS 動態填充 -->
+        <!-- ======================================================= -->
+        <section class="page-section" id="store-detail-page">
+            <section class="store-hero">
+                <img id="detail-hero-img" src="{{ url_for('static', filename='images/stores/default_store.jpg') }}" alt="店家主視覺">
+            </section>
+
+            <section class="store-details">
+                <p id="detail-description">店家資訊將動態載入。</p>
+                <div class="store-meta">
+                    <span id="detail-rating-stars" class="rating-stars"></span>
+                    <span id="detail-price-meta" class="price-meta"></span>
+                    <span id="detail-distance" class="distance"></span>
+                    <!-- 追蹤圖標: 預設空心愛心 (已刪除按鈕和文字，只保留圖標作為按鈕) -->
+                    <i class="fa-regular fa-heart follow-icon" id="follow-icon"></i>
+                </div>
+            </section>
+
+            <section class="menu-preview">
+                <h4>你可能喜歡 (菜單預覽)</h4>
+                <div id="detail-menu-cards" class="menu-cards">
+                    <!-- JS 將在此處插入菜單卡片 -->
+                </div>
+            </section>
+
+            <section class="map-section">
+                <h4 id="detail-address"></h4>
+            </section>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- 3. 我的飲食頁 (Frame 3 & 5) -->
+        <!-- ======================================================= -->
+        <section class="page-section" id="diet-page">
+
+            <!-- 上半部：日曆與餐次按鈕 (並排) -->
+            <div class="diet-top-section">
+                <!-- 左側：日曆 -->
+                <div class="diet-sidebar">
+                    <div class="calendar-widget">
+                        <!-- 月曆抬頭 -->
+                        <div class="cal-header">
+                            <i class="fa-solid fa-chevron-left" id="prev-month"></i>
+                            <span id="current-month-year">Sep 2025</span>
+                            <i class="fa-solid fa-chevron-right" id="next-month"></i>
+                        </div>
+                        <!-- 月曆網格 (將由 JS 填充) -->
+                        <div class="cal-grid" id="calendar-grid">
+                            <!-- 星期幾標籤 -->
+                            <span class="cal-weekday">Su</span>
+                            <span class="cal-weekday">Mo</span>
+                            <span class="cal-weekday">Tu</span>
+                            <span class="cal-weekday">We</span>
+                            <span class="cal-weekday">Th</span>
+                            <span class="cal-weekday">Fr</span>
+                            <span class="cal-weekday">Sa</span>
+                            <!-- 日期將由 JS 填充 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側：餐次輸入按鈕 -->
+                <div class="meal-buttons-container">
+                    <div class="meal-input-section">
+                        <button class="meal-card-btn" data-meal="breakfast" data-meal-id="1">
+                            <span>早餐</span>
+                            <span class="meal-cal-summary">已攝取：約 0 大卡</span>
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button class="meal-card-btn" data-meal="lunch" data-meal-id="2">
+                            <span>午餐</span>
+                            <span class="meal-cal-summary">已攝取：約 0 大卡</span>
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button class="meal-card-btn" data-meal="dinner" data-meal-id="3">
+                            <span>晚餐</span>
+                            <span class="meal-cal-summary">已攝取：約 0 大卡</span>
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button class="meal-card-btn" data-meal="other" data-meal-id="4">
+                            <span>其他</span>
+                            <span class="meal-cal-summary">已攝取：約 0 大卡</span>
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下半部：輸入表單與統計 (全寬，位於上方區塊之下) -->
+            <div class="diet-bottom-section">
+                <!-- 飲食輸入表單 (Frame 5) - 預設隱藏，點擊餐次卡片後顯示/隱藏 -->
+                <section class="diet-input-form" id="diet-form" style="display: none;">
+                    <div class="nutrient-pills">
+                        <span class="pill-label">食物名稱</span>
+                        <span class="pill-label">熱量</span><span class="pill-label">碳水化合物</span>
+                        <span class="pill-label">蛋白質</span><span class="pill-label">脂肪</span>
+                        <span class="pill-label">糖</span><span class="pill-label">鈉</span>
+                    </div>
+                    <div class="input-row">
+                        <!-- 為輸入欄位添加 ID 以便 JS 讀取 -->
+                        <input type="text" id="food-name" placeholder="食物名稱">
+                        <input type="number" id="food-cals" placeholder="">
+                        <input type="number" id="food-carbs" placeholder="">
+                        <input type="number" id="food-protein" placeholder="">
+                        <input type="number" id="food-fat" placeholder="">
+                        <input type="number" id="food-sugar" placeholder="">
+                        <input type="number" id="food-sodium" placeholder="">
+                    </div>
+                    <div class="action-buttons">
+                        <input type="file" id="food-image-input" accept="image/*" style="display: none;">
+                        <button class="btn btn-secondary" id="upload-image-btn"><i class="fa-solid fa-camera"></i> <span id="upload-btn-text">上傳圖片</span></button>
+                        <div class="spacer"></div>
+                        <button class="btn btn-danger" id="delete-diet-btn"><i class="fa-solid fa-trash-can"></i> 刪除</button>
+                        <button class="btn btn-primary" id="save-diet-btn"><i class="fa-solid fa-floppy-disk"></i>
+                            儲存</button>
+                    </div>
+                </section>
+
+                <!-- 總體摘要 (預設顯示) -->
+                <div id="total-summary">
+                    <section class="nutrient-summary">
+                        <h3 class="price-title">今日累積攝取</h3>
+                        <div class="nutrient-pills">
+                            <span class="pill-label">熱量</span><span class="pill-label">碳水化合物</span>
+                            <span class="pill-label">蛋白質</span><span class="pill-label">脂肪</span>
+                            <span class="pill-label">糖</span><span class="pill-label">鈉</span>
+                        </div>
+                        <div class="summary-values" id="total-summary-values">
+                            <!-- 預設為 0 -->
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>大卡</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>公克</p>
+                            </div>
+                            <div class="summary-value">
+                                <p>0</p>
+                                <p>毫克</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 今日所有飲食細節列表 -->
+                    <section class="food-entry-list" id="total-food-list">
+                        <!-- 所有飲食條目將由 JS 填充 -->
+                    </section>
+                </div>
+
+                <!-- 單餐細節 (預設隱藏) -->
+                <div id="meal-detail-container">
+                    <section class="nutrient-summary">
+                        <h3 class="price-title" id="meal-summary-title">午餐攝取量</h3>
+                        <div class="nutrient-pills">
+                            <span class="pill-label">熱量</span><span class="pill-label">碳水化合物</span>
+                            <span class="pill-label">蛋白質</span><span class="pill-label">脂肪</span>
+                            <span class="pill-label">糖</span><span class="pill-label">鈉</span>
+                        </div>
+                        <div class="summary-values" id="meal-summary-values">
+                            <!-- 該餐的總攝取數據將由 JS 填充 -->
+                        </div>
+                    </section>
+
+                    <!-- 飲食細節列表 (單餐) -->
+                    <section class="food-entry-list" id="meal-food-list">
+                        <!-- 單餐飲食條目將由 JS 填充 -->
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- 4. 收藏列表頁 (Frame 4) -->
+        <!-- ======================================================= -->
+        <section class="page-section" id="favorite-page">
+            <section class="favorite-filter">
+                <div class="filter-input-group">
+                    <label for="collection-select">收藏分類</label>
+                    <select id="collection-select">
+                        <option value="all">所有</option>
+                        <option value="thai">泰式</option>
+                        <option value="sushi">日式壽司</option>
+                    </select>
+                    <input type="text" placeholder="搜尋您的收藏" class="large-filter-input">
+                </div>
+            </section>
+
+            <!-- 收藏列表容器 (將由 JS 動態填充) -->
+            <section class="store-list" id="favorite-list-container" style="margin-top: 30px;">
+                <!-- JS 將在此處插入動態生成的收藏店家卡片或空列表提示 -->
+            </section>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>登入</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">帳號</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密碼</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登入</button>
+                <p style="margin-top: 10px;">還沒有帳號？ <a href="#" id="switch-to-register">註冊</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>註冊</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">帳號</label>
+                    <input type="text" id="reg-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">密碼</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-mode">模式</label>
+                    <select id="reg-mode">
+                        <option value="NORMAL">一般模式</option>
+                        <option value="FITNESS">健身模式</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reg-budget">單餐預算</label>
+                    <input type="number" id="reg-budget" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="reg-calories">目標熱量</label>
+                    <input type="number" id="reg-calories">
+                </div>
+                <div class="form-group">
+                    <label for="reg-protein">目標蛋白質</label>
+                    <input type="number" id="reg-protein">
+                </div>
+                <div class="form-group">
+                    <label for="reg-fat">目標脂肪</label>
+                    <input type="number" id="reg-fat">
+                </div>
+                <button type="submit" class="btn btn-primary">註冊</button>
+                <p style="margin-top: 10px;">已有帳號？ <a href="#" id="switch-to-login">登入</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>個人資料</h2>
+            <div id="profile-details">
+                <!-- JS will populate this -->
+            </div>
+            <button id="logout-btn" class="btn btn-danger" style="margin-top: 20px; background-color: #dc3545; color: white;">登出</button>
+        </div>
+    </div>
+
+    <!-- 引入自訂 JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

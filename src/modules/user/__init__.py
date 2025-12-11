@@ -1,5 +1,6 @@
 """
 User 模組：處理登入等使用者驗證相關路由
+（目前未使用）
 """
 
 from flask import Blueprint

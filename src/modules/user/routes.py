@@ -1,32 +1,86 @@
-"""
-User 模組路由
-"""
-
-from flask import render_template, request, redirect, url_for, flash
-from services.db import authenticate_user, DatabaseError, driver_available
+from flask import request, jsonify, session
 from . import user_bp
+from services.user_service import UserService
 
+user_service = UserService()
 
-@user_bp.route("/login", methods=["GET", "POST"])
+@user_bp.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No input data provided'}), 400
+    
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'error': 'Username and password are required'}), 400
+        
+    mode = data.get('mode', 'NORMAL')
+    budget = data.get('budget', 0)
+    target_calories = data.get('targetCalories')
+    target_protein = data.get('targetProtein')
+    target_fat = data.get('targetFat')
+    
+    try:
+        user_id = user_service.create_user(
+            username=username, 
+            password=password,
+            mode=mode,
+            budget=budget,
+            target_calories=target_calories,
+            target_protein=target_protein,
+            target_fat=target_fat
+        )
+        return jsonify({'message': 'User registered successfully', 'user_id': user_id}), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 409
+    except Exception as e:
+        return jsonify({'error': 'Registration failed', 'details': str(e)}), 500
+
+@user_bp.route('/login', methods=['POST'])
 def login():
-    """顯示並處理登入表單"""
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "")
-
+    print("DEBUG: Login request received")
+    try:
+        data = request.get_json()
+        print(f"DEBUG: Login data: {data}")
+        if not data:
+            return jsonify({'error': 'No input data provided'}), 400
+            
+        username = data.get('username')
+        password = data.get('password')
+        
         if not username or not password:
-            flash("請輸入帳號與密碼", "warning")
+            return jsonify({'error': 'Username and password are required'}), 400
+            
+        user = user_service.verify_user(username, password)
+        if user:
+            print(f"DEBUG: Login successful for {username}")
+            session['user_id'] = user['userID']
+            session['username'] = user['username']
+            return jsonify({'message': 'Login successful', 'user': user}), 200
         else:
-            try:
-                user = authenticate_user(username=username, password=password)
-                if user:
-                    flash(f"歡迎回來，{user['username']}！", "success")
-                    return redirect(url_for("home.index"))
-                flash("帳號或密碼不正確", "danger")
-            except DatabaseError as exc:
-                flash(f"登入服務暫時無法使用：{exc}", "danger")
+            print(f"DEBUG: Login failed for {username}")
+            return jsonify({'error': 'Invalid username or password'}), 401
+    except Exception as e:
+        print(f"DEBUG: Login exception: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': 'Internal server error'}), 500
 
-    return render_template(
-        "user/login.html",
-        driver_ready=driver_available(),
-    )
+@user_bp.route('/logout', methods=['POST', 'GET'])
+def logout():
+    session.clear()
+    return jsonify({'message': 'Logged out successfully'}), 200
+
+@user_bp.route('/profile', methods=['GET'])
+def profile():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Not authenticated'}), 401
+        
+    user = user_service.get_user_by_id(user_id)
+    if user:
+        return jsonify(user), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404

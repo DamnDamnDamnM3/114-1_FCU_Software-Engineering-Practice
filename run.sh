@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 clear
 
 echo "Activating virtual environment..."
