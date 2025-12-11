@@ -1,8 +1,12 @@
 // API 基礎 URL
 const API_BASE = '/api';
+const AUTH_BASE = '/auth';
 
-// 使用者 ID（實際應用中應該從 session 或登入狀態取得）
-const USER_ID = 1;
+// 使用者狀態
+let currentUser = null;
+// 預設使用者 ID (未登入時使用，例如 1 為預設展示帳號)
+const DEFAULT_USER_ID = 1; 
+let currentUserId = DEFAULT_USER_ID;
 
 // 店家資料（從 API 載入）
 let storeData = [];
@@ -112,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (filters.price) params.append('price', filters.price);
             if (filters.vegetarian) params.append('vegetarian', 'true');
-            params.append('user_id', USER_ID);
+            params.append('user_id', currentUserId);
 
             const response = await fetch(`${API_BASE}/stores?${params.toString()}`);
             const result = await response.json();
@@ -131,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchStoreDetail(storeId) {
         try {
-            const response = await fetch(`${API_BASE}/stores/${storeId}?user_id=${USER_ID}`);
+            const response = await fetch(`${API_BASE}/stores/${storeId}?user_id=${currentUserId}`);
             const result = await response.json();
 
             if (result.success) {
@@ -148,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchFavorites() {
         try {
-            const response = await fetch(`${API_BASE}/favorites?user_id=${USER_ID}`);
+            const response = await fetch(`${API_BASE}/favorites?user_id=${currentUserId}`);
             const result = await response.json();
 
             if (result.success) {
@@ -171,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    user_id: USER_ID,
+                    user_id: currentUserId,
                     restaurant_id: restaurantId
                 })
             });
@@ -191,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    user_id: USER_ID,
+                    user_id: currentUserId,
                     restaurant_id: restaurantId
                 })
             });
@@ -956,6 +960,196 @@ document.addEventListener('DOMContentLoaded', () => {
             loadStores();
         });
     }
+
+    // --- Authentication Logic ---
+
+    const loginModal = document.getElementById('login-modal');
+    const registerModal = document.getElementById('register-modal');
+    const profileModal = document.getElementById('profile-modal');
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const headerUsername = document.getElementById('header-username');
+    const closeModalSpans = document.querySelectorAll('.close-modal');
+    const switchToRegister = document.getElementById('switch-to-register');
+    const switchToLogin = document.getElementById('switch-to-login');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const logoutBtn = document.getElementById('logout-btn');
+    const profileDetails = document.getElementById('profile-details');
+
+    // Check login status on load
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch(`${AUTH_BASE}/profile`);
+            if (response.ok) {
+                currentUser = await response.json();
+                currentUserId = currentUser.userID;
+                updateUserUI();
+            } else {
+                currentUser = null;
+                currentUserId = DEFAULT_USER_ID; // Fallback to default user
+                updateUserUI();
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            currentUser = null;
+            currentUserId = DEFAULT_USER_ID;
+            updateUserUI();
+        }
+    }
+
+    function updateUserUI() {
+        const headerUsername = document.getElementById('header-username');
+        if (!headerUsername) return;
+
+        if (currentUser) {
+            headerUsername.textContent = currentUser.username;
+        } else {
+            headerUsername.textContent = '登入';
+        }
+    }
+
+    // Modal controls
+    if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', () => {
+            if (currentUser) {
+                // Show profile modal
+                showProfile();
+                profileModal.style.display = 'block';
+            } else {
+                // Show login modal
+                loginModal.style.display = 'block';
+            }
+        });
+    }
+
+    closeModalSpans.forEach(span => {
+        span.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'none';
+            profileModal.style.display = 'none';
+        });
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target == loginModal) loginModal.style.display = 'none';
+        if (event.target == registerModal) registerModal.style.display = 'none';
+        if (event.target == profileModal) profileModal.style.display = 'none';
+    });
+
+    if (switchToRegister) {
+        switchToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'block';
+        });
+    }
+
+    if (switchToLogin) {
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerModal.style.display = 'none';
+            loginModal.style.display = 'block';
+        });
+    }
+
+    // Login
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${AUTH_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    currentUser = data.user;
+                    currentUserId = currentUser.userID;
+                    updateUserUI();
+                    loginModal.style.display = 'none';
+                    // Reload data for the new user
+                    loadDietData();
+                    loadFavorites();
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login error: ' + error.message);
+            }
+        });
+    }
+
+    // Register
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            const mode = document.getElementById('reg-mode').value;
+            const budget = document.getElementById('reg-budget').value;
+            const targetCalories = document.getElementById('reg-calories').value;
+            const targetProtein = document.getElementById('reg-protein').value;
+            const targetFat = document.getElementById('reg-fat').value;
+
+            try {
+                const response = await fetch(`${AUTH_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username, password, mode, budget,
+                        targetCalories, targetProtein, targetFat
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Registration successful! Please login.');
+                    registerModal.style.display = 'none';
+                    loginModal.style.display = 'block';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration error: ' + error.message);
+            }
+        });
+    }
+
+    // Logout
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await fetch(`${AUTH_BASE}/logout`, { method: 'POST' });
+                // Reload the page to reflect logout state
+                window.location.reload();
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.reload();
+            }
+        });
+    }
+
+    function showProfile() {
+        if (!currentUser) return;
+        profileDetails.innerHTML = `
+            <p><strong>帳號:</strong> ${currentUser.username}</p>
+            <p><strong>模式:</strong> ${currentUser.mode}</p>
+            <p><strong>預算:</strong> ${currentUser.budget}</p>
+            <p><strong>目標熱量:</strong> ${currentUser.targetCalories || '-'}</p>
+            <p><strong>目標蛋白質:</strong> ${currentUser.targetProtein || '-'}</p>
+            <p><strong>目標脂肪:</strong> ${currentUser.targetFat || '-'}</p>
+        `;
+    }
+
+    // Initial check
+    checkLoginStatus();
 
     // --- 啟動初始化 ---
 

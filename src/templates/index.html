@@ -21,9 +21,9 @@
             <a href="#" class="nav-item" data-page="diet-page" id="nav-diet">我的飲食</a>
             <a href="#" class="nav-item" data-page="favorite-page" id="nav-favorite">收藏</a>
         </nav>
-        <div class="user-icon">
+        <div class="user-icon" id="user-menu-btn" style="cursor: pointer;">
             <i class="fa-solid fa-user"></i>
-        </diV>
+        </div>
     </header>
 
     <main class="container">
@@ -108,7 +108,6 @@
 
             <section class="map-section">
                 <h4 id="detail-address"></h4>
-                <div class="map-placeholder"></div>
             </section>
         </section>
 
@@ -288,6 +287,81 @@
             </section>
         </section>
     </main>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>登入</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">帳號</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密碼</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登入</button>
+                <p style="margin-top: 10px;">還沒有帳號？ <a href="#" id="switch-to-register">註冊</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>註冊</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">帳號</label>
+                    <input type="text" id="reg-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">密碼</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-mode">模式</label>
+                    <select id="reg-mode">
+                        <option value="NORMAL">一般模式</option>
+                        <option value="FITNESS">健身模式</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reg-budget">單餐預算</label>
+                    <input type="number" id="reg-budget" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="reg-calories">目標熱量</label>
+                    <input type="number" id="reg-calories">
+                </div>
+                <div class="form-group">
+                    <label for="reg-protein">目標蛋白質</label>
+                    <input type="number" id="reg-protein">
+                </div>
+                <div class="form-group">
+                    <label for="reg-fat">目標脂肪</label>
+                    <input type="number" id="reg-fat">
+                </div>
+                <button type="submit" class="btn btn-primary">註冊</button>
+                <p style="margin-top: 10px;">已有帳號？ <a href="#" id="switch-to-login">登入</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>個人資料</h2>
+            <div id="profile-details">
+                <!-- JS will populate this -->
+            </div>
+            <button id="logout-btn" class="btn btn-danger" style="margin-top: 20px; background-color: #dc3545; color: white;">登出</button>
+        </div>
+    </div>
 
     <!-- 引入自訂 JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>

@@ -7,4 +7,4 @@ from flask import Blueprint
 
 user_bp = Blueprint("user", __name__, url_prefix="/auth")
 
-# 路由已移除，如需使用請重新建立 routes.py
+from . import routes
