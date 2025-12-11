@@ -210,22 +210,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LocalStorage 存取函式 ---
 
     function getLocalDietLogs() {
-        const logs = localStorage.getItem('diet_logs');
+        const key = `diet_logs_${currentUserId}`;
+        const logs = localStorage.getItem(key);
         return logs ? JSON.parse(logs) : [];
     }
 
     function saveLocalDietLogs(logs) {
-        localStorage.setItem('diet_logs', JSON.stringify(logs));
+        const key = `diet_logs_${currentUserId}`;
+        localStorage.setItem(key, JSON.stringify(logs));
     }
 
     // --- 收藏 LocalStorage 存取函式 ---
     function getLocalFavorites() {
-        const favs = localStorage.getItem('user_favorites');
+        // 使用 currentUserId 作為 key 的一部分，實現多使用者隔離
+        const key = `user_favorites_${currentUserId}`;
+        const favs = localStorage.getItem(key);
         return favs ? JSON.parse(favs) : [];
     }
 
     function saveLocalFavorites(favs) {
-        localStorage.setItem('user_favorites', JSON.stringify(favs));
+        const key = `user_favorites_${currentUserId}`;
+        localStorage.setItem(key, JSON.stringify(favs));
     }
 
     // 暴露給全域使用，以便 onclick 可以呼叫

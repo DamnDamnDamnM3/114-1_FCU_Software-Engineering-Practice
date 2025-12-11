@@ -5,7 +5,7 @@
 
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
-from services.db import fetch_all, fetch_one, driver_available, DatabaseError
+from services.db import fetch_all, fetch_one, execute, driver_available, DatabaseError
 
 
 @dataclass
